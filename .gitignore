@@ -3,6 +3,7 @@
 *.save
 *.orig
 libnetrobots.so
+robots.a
 robotserver
 counter
 rabbit
