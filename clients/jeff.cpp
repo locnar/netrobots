@@ -92,7 +92,7 @@ main ()
    while (1)
    {
       cruise();
-      bestTargetRange = 701;
+      bestTargetRange = 751;
       bestTargetAngle = 0;
 
       for ( angle=0; angle<360; angle+=(2*RES)-1 ) {
@@ -103,7 +103,7 @@ main ()
             bestTargetRange = range;
             bestTargetAngle = angle;
             break;
-         } else if ( range < 700 ) {
+         } else if ( range < 750 ) {
             if ( range < bestTargetRange ) {
                bestTargetRange = range;
                bestTargetAngle = angle;
@@ -111,14 +111,14 @@ main ()
          }
       }
 
-      if ( ( 50 < bestTargetRange ) && ( bestTargetRange < 700 ) )
+      if ( ( 50 < bestTargetRange ) && ( bestTargetRange < 750 ) )
       {
          if ( 500 < bestTargetRange ) {              // if it's far away, then
             for ( angle=bestTargetAngle-RES;         // pinpoint the angle
                   angle<bestTargetAngle+RES;
                   angle += 2 ) {
                range = scan( angle, 1 );
-               if ( ( 50 < range ) && ( range < 700 ) ) {
+               if ( ( 50 < range ) && ( range < 750 ) ) {
                   break;
                }
             }
@@ -128,7 +128,7 @@ main ()
            range = bestTargetRange;
            angle = bestTargetAngle;
          }
-         if ( ( 50 < range ) && ( range < 700 ) ) {
+         if ( ( 50 < range ) && ( range < 750 ) ) {
             while (cannon (angle, range) != 0) ;  /* fire all shots */
          }  // if there's something precise to shoot at
       }  // if there's something to shoot at
