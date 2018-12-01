@@ -29,7 +29,7 @@ extern int max_robots;
 int max_cycles;
 int current_cycles = 0;
 
-struct robot **all_robots;
+// jagwas: struct robot **all_robots;
 
 float get_rand_color() {
 	float color = (float) (random() /(double) RAND_MAX) ;
@@ -39,6 +39,10 @@ float get_rand_color() {
 }
 
 static int quad = 0;
+
+        /* jag; 12nov2018 -- begin  added code */
+void update_display( SDL_Event *event );
+        /* jag; 12nov2018 -- end of added code */
 
 int
 create_client (int fd)
@@ -62,6 +66,15 @@ create_client (int fd)
 
 	fds[current_robots].fd = fd;
 	all_robots[current_robots++] = r;
+
+// jag; get the robot name, which the robot sends as the first string of
+//      text, ending with a NUL ('\0', or 0).
+               // the amount requested by the below read() call should be
+               // STD_BUF bytes, to match the write() in robots.c
+	if ( 0 < read( fd, r->name, sizeof(r->name) ) ) {
+	  ndprintf( stdout, "[SERVER] robot didn't send its name...\n" );
+        }
+
 	return 1;
 }
 
@@ -73,9 +86,10 @@ void raise_timer (int sig)
 	timer = 1;
 }
 
-void
+int
 process_robots ()
 {
+        int retVal = 0;
 	int i, ret, rfd;
 	struct pollfd *pfd;
 	result_t result;
@@ -101,7 +115,9 @@ process_robots ()
 				ndprintf(stdout, "[GAME] Winner found\n");
 			else
 				ndprintf(stdout, "[GAME] Ended - No winner\n");
-			exit(EXIT_SUCCESS);
+                        sleep( 2 );
+			// jagwas: exit(EXIT_SUCCESS);
+                        retVal = 1; // tell upper code layers it's time to quit
 		}
 		else if (to_talk == 1)
 			winner = 1;
@@ -112,6 +128,7 @@ process_robots ()
 			pfd = &fds[i];
 			if (pfd->fd == -1) // Dead robot
 				continue;
+
 			if (pfd->events == 0)
 				to_talk--;
 
@@ -146,7 +163,11 @@ process_robots ()
 					kill_robot(robot);
 					break;
 				case 0:
-					abort ();
+					close(pfd->fd);     // jag;
+					pfd->fd = -1;       // jag;
+					kill_robot(robot);  // jag;
+					break;              // jag;
+					// jagwas: abort ();
 				default:
 					buf[ret] = '\0';
 					result = execute_cmd(robot, buf);
@@ -168,6 +189,7 @@ process_robots ()
 			}
 		}
 	} while (to_talk && !timer);
+        return retVal;
 }
 
 void
@@ -177,10 +199,10 @@ server_start (char *hostname, char *port)
 	struct addrinfo *ai, *runp, hints;
 	struct sockaddr *addr;
 	socklen_t addrlen = sizeof(addr);
-	double start, end;
     
 	memset (&hints, 0x0, sizeof (hints));
 	hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG;
+	hints.ai_family = PF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 
 	ndprintf(stdout, "[SERVER] Starting Server at %s:%s\n[INFO] Number of players: %d\n", hostname, port, max_robots);
@@ -191,6 +213,7 @@ server_start (char *hostname, char *port)
 		ndprintf_die(stderr, "[ERROR] getaddrinf(): couldn't fill the struct!\n");
 
 	runp = ai;
+
 	do {
 		sockd = socket(runp->ai_family, runp->ai_socktype, runp->ai_protocol);
 		if (sockd != -1)
@@ -208,7 +231,7 @@ server_start (char *hostname, char *port)
 	if (listen(sockd, max_robots))
 		ndprintf_die(stderr, "[ERROR] listen(): %s\n", strerror(errno));
 	if (!(fds = (struct pollfd *) malloc (max_robots * sizeof(struct pollfd))))
-		ndprintf_die(stderr, "[ERROR] Coulnd't malloc space for fds!\n");
+		ndprintf_die(stderr, "[ERROR] Couldn't malloc space for fds!\n");
 	
 	while (1) { /* Wait for all the clients to connect */
 		fd = accept(sockd, (struct sockaddr *) &addr, &addrlen);
@@ -224,7 +247,7 @@ server_start (char *hostname, char *port)
 	signal (SIGALRM, raise_timer);
 }
 
-void server_cycle (SDL_Event *event)
+int server_cycle (SDL_Event *event)
 {
 	int i;
 	if (current_cycles >= max_cycles) {
@@ -247,7 +270,7 @@ void server_cycle (SDL_Event *event)
 	timer = 0;
 	cycle();
 	update_display(event);
-	process_robots();
+	return process_robots();
 }
 
 void

@@ -17,7 +17,7 @@
 #include "field.h"
 #include "robotserver.h"
 
-static cairo_t *map_context;
+// static cairo_t *map_context;
 static cairo_t *cr;
 
 /*
@@ -41,7 +41,9 @@ shot_animation(cairo_t *cr, double size, double direction, struct cannon *can)
 	
 	cairo_save (cr);
 	cairo_pattern_t *pat;
-	cairo_translate (cr, can->x, can->y);
+                 // jag; translate to 1000-y, rather than y, because the
+                 // graphics canvas has 0 at the top, and 1000 at the bottom.
+	cairo_translate (cr, can->x, 1000-can->y);
 
 #if 0
 	/* flash of the shot, should be translate to the robot's position.  */
@@ -130,7 +132,8 @@ void
 draw_stats(cairo_t *cr, struct robot **all)
 {
 	int i;
-	int space = 50;
+	// jagwas: int space = 50;
+	int space = 60;
 	cairo_pattern_t *pat;
 
 	cairo_save (cr);
@@ -146,14 +149,16 @@ draw_stats(cairo_t *cr, struct robot **all)
 		cairo_select_font_face (cr, "Sans", CAIRO_FONT_SLANT_NORMAL,
                                CAIRO_FONT_WEIGHT_BOLD);
 		cairo_set_font_size (cr, 13.0);
+		cairo_set_source_rgba (cr, 0, 0, 0, 0.5);   // black?
 
 		cairo_move_to (cr, 10.0, 15.0+i*space);		
 		cairo_show_text (cr, all[i]->name);
+		// jagtry: cairo_show_text (cr, "test");
 		
 		/* line with gradient from red to green*/
-		cairo_move_to (cr, 10, 25+i*space);
+		cairo_move_to (cr, 10, 35+i*space);
 		cairo_set_line_width (cr, 30);
-		cairo_line_to (cr, 110, 25+i*space);
+		cairo_line_to (cr, 110, 35+i*space);
 		pat = cairo_pattern_create_linear (100.0, 0.0,  0.0, 0.0);
 		cairo_pattern_add_color_stop_rgba (pat, 1, 1, 0, 0, 1);
 		cairo_pattern_add_color_stop_rgba (pat, 0, 0, 1, 0, 1);
@@ -162,20 +167,20 @@ draw_stats(cairo_t *cr, struct robot **all)
 		cairo_pattern_destroy (pat);
 		
 		/*black line on top of the colored one*/
-		cairo_move_to (cr, 10, 25+i*space);
+		cairo_move_to (cr, 10, 35+i*space);
 		cairo_set_line_width (cr, 24);
 		cairo_set_source_rgba (cr, 0, 0, 0, 0.5);
-		cairo_line_to (cr, 110 - all[i]->damage, 25+i*space);
+		cairo_line_to (cr, 110 - all[i]->damage, 35+i*space);
 		cairo_stroke (cr);
 		
 		/*reloading animation goes here*/
 		
 		
 		/*separation line between the different robots*/
-		cairo_move_to (cr, 20, 45+i*space);
+		cairo_move_to (cr, 20, 55+i*space);
 		cairo_set_line_width (cr, 4);
 		cairo_set_source_rgb (cr, all[i]->color[0], all[i]->color[1], all[i]->color[2]);
-		cairo_line_to (cr, 100, 45+i*space);
+		cairo_line_to (cr, 100, 55+i*space);
 		cairo_stroke (cr);
 		
 	}
@@ -198,10 +203,15 @@ draw_robot(cairo_t *cr, struct robot *myRobot, double size)
 		px4=70, py4=10;
 	
 	cairo_save(cr);
-	cairo_translate(cr, myRobot->x, myRobot->y);
+                 // jag; translate to 1000-y, rather than just y, because the
+                 // graphics canvas has 0 at the top, and 1000 at the bottom.
+	cairo_translate(cr, myRobot->x, 1000-myRobot->y);
 	cairo_scale(cr, size, size);
 	cairo_save(cr);
-	cairo_rotate(cr, degtorad(90+myRobot->degree));
+                 // jag; translate to 90-degrees because the
+                 // graphics canvas has 0 at the top, and 1000 at the bottom.
+                 // (This was previously 90+myRobot->degree).
+	cairo_rotate(cr, degtorad(90-myRobot->degree));
 	
 	cairo_set_source_rgba (cr, myRobot->color[0], myRobot->color[1], myRobot->color[2], 0.6);
 	cairo_set_line_width (cr, 2);
@@ -220,8 +230,12 @@ draw_robot(cairo_t *cr, struct robot *myRobot, double size)
 	
 	cairo_stroke (cr);
 	cairo_restore(cr); /* pop rotate */
-	draw_cannon(cr, degtorad(270+myRobot->cannon_degree));
-	draw_radar(cr, degtorad(270+myRobot->radar_degree));
+               // rotation amounts here must be "270-desireddirection"
+               // because the display canvas has 0 at the top, and
+               // larger numbers increasing downwards.
+               // (These were previously 270+myRobot->xxx_degree).
+	draw_cannon(cr, degtorad(270-myRobot->cannon_degree));
+	draw_radar(cr, degtorad(270-myRobot->radar_degree));
 	cairo_restore(cr); /* pop translate/scale */
 	shot_animation(cr, size, degtorad(myRobot->cannon_degree), &myRobot->cannon[0]);
 	shot_animation(cr, size, degtorad(myRobot->cannon_degree), &myRobot->cannon[1]);

@@ -1,6 +1,8 @@
 #ifndef ROBOTSERVER_H
 #define ROBOTSERVER_H 1
 
+#include "net_utils.h"
+
 #define RELOAD_RATIO 50
 #define SPEED_RATIO 0.04
 #define BREAK_DISTANCE (0.7 / SPEED_RATIO)
@@ -12,7 +14,7 @@ struct cannon {
 
 struct robot {
   // int fd; Should not be needed as it is synchronized with the array of fds
-  char *name;
+  char name[STD_BUF];   // this size must match size of progname in client
   double x, y;
   int damage;
   int speed;
@@ -27,8 +29,8 @@ struct robot {
   /* info on what was done... */
 };
 
-struct robot **all_robots;
-int max_robots;
+extern struct robot **all_robots;   // jag; 15nov2018; added extern
+extern int max_robots;              // jag; 15nov2018; added extern
 
 /* Interface from networking code to game logic.  */
 

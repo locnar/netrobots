@@ -120,7 +120,7 @@ execute_cmd (struct robot *robot, char *input)
 
 
 	ret = cmd.func(robot, args);
-	ndprintf(stdout, "[COMMAND] %s -> %d recived - %g %g %d\n", argv[0], ret, robot->x, robot->y, robot->damage);
+	ndprintf(stdout, "[COMMAND] %s -> %d received - %g %g %d\n", argv[0], ret, robot->x, robot->y, robot->damage);
 	if (ret == -1)
 		return error_res;
 

@@ -43,7 +43,7 @@ cairo_t *
 create_cairo_context (void)
 {
   unsigned char *buffer;
-  buffer = calloc (4 * WIN_WIDTH * WIN_HEIGHT, sizeof (char));
+  buffer = (unsigned char *)calloc (4 * WIN_WIDTH * WIN_HEIGHT, sizeof (char));
   return create_cairo_context_1 (buffer);
 }
 
@@ -69,7 +69,7 @@ cairo_t *
 init_sdl (void)
 {
   /* init cairo.  */
-  unsigned char *buffer = calloc (4 * WIN_WIDTH * WIN_HEIGHT, sizeof (char));
+  unsigned char *buffer = (unsigned char *)calloc (4 * WIN_WIDTH * WIN_HEIGHT, sizeof (char));
   cairo_t *cairo_context = create_cairo_context_1 (buffer);
 
   /* init SDL */

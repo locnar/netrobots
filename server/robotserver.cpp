@@ -1,7 +1,10 @@
 #include "robotserver.h"
-#import <stdlib.h>
-#import <stdio.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
+
+struct robot **all_robots;   // jag; 15nov2018; added here
+int max_robots;              // jag; 15nov2018; added here
 
 void
 kill_robot(struct robot *r) {
@@ -84,7 +87,7 @@ scan (struct robot *r, int degree, int resolution)
 	//printf("x %d\n", posx);
 	//printf("y %d\n", posy);
 
-	if(resolution > 10 && resolution < 0){
+	if(resolution < 0 || 10 < resolution ){
 		return -1;
 	}
 	
