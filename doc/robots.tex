@@ -1,6 +1,8 @@
 \documentclass{article}
-\title{Guidelines for the C programming project}
-\author{Paolo Bonzini, Adina Mosincat}
+\title{Guidelines for the Netrobots C programming project}
+\author{Paolo Bonzini, Adina Mosincat,
+        \and
+        adapted for FRC Team 4918 by Jeff Gibbons}
 \date{\today}
 \def\UL{\char`\_}
 
@@ -21,17 +23,17 @@
 
         The compass system is oriented so that east (right) is 0
         degrees, 90 is north, 180 is west, 270 is south.  One degree
-        below east is 359.
+        below due east is 359.
 
 
 \begin{verbatim}
-     225   270   315
+     135    90   45
          \  |  / 
           \ | /
     180 --- x --- 0
           / | \
          /  |  \ 
-     135    90   45
+     225   270  315
 \end{verbatim}
 
 
@@ -41,12 +43,12 @@
         The main offensive weapons are the cannon and scanner.  The
         cannon has a range of 700 meters.  There are an unlimited number
         of missiles that can be fired, but a reloading factor limits the
-        number of missiles in the air at any one time to two.  The cannon
-        is mounted on an independent turret, and therefore can fire any
-        direction, 0-359, regardless of robot heading.
+        number of each robot's missiles in the air at any one time to two.
+        The cannon is mounted on an independent turret, and therefore can
+        fire any direction, 0-359, regardless of robot heading.
 
         The scanner is an optical device that can instantly scan any
-        chosen heading, 0-359.  The scanner has a maximum resolution of  
+        chosen heading, 0-359.  The scanner has a maximum beam-width of  
         +/- 10 degrees.  This enables the robot to quickly scan the field
         at a low resolution, then use maximum resolution to pinpoint an
         opponent.
@@ -54,18 +56,18 @@
 
 \subsection{Robot defense }
 
-        The only defense available are the robot engine and status
-        registers.  The motor can be engaged on any heading, 0-359, in
+        The only defenses available are the robot engine and status
+        functions.  The motor can be engaged on any heading, 0-359, in
         speeds from 0-100 percent of power.  There are acceleration and
-        deacceleration factors.  A speed of 0 stops the motor.  Turns can
+        deceleration factors.  A speed of 0 stops the motor.  Turns can
         be negotiated at speeds of 50% and less, in any direction.  Of
         course, the engine can be engaged any time, and is necessary
         on offense when a target is beyond the 700 meter range of the
         cannon.
 
-        Certain status registers provide feedback to the robot. The
-        primary registers indicate the percent of damage, and current x
-        and y locations on the battlefield.  Another register provides
+        Certain status functions provide feedback to the robot. The
+        primary functions indicate the percent of damage, and current x
+        and y locations on the battlefield.  Another function provides
         current movement speed.
 
 
@@ -92,7 +94,7 @@
         levels.  In other words, a robot at 99\% damage performs equally
         as a robot with no damage.
 
-        A robot program that crashes or exits (!) will bring immediately
+        A robot program that crashes or exits (!) will immediately bring
         the robot to 100\% damage.
 
 \section{Simulation execution}
@@ -117,8 +119,9 @@
         how the server and client interact.  The actual protocol is equivalent
 	though.
 
-        After a number of cycles given on the command line to the server,
-        the server declares a draw and causes the clients to exit.
+        After a number of cycles (which may be given on the command line
+        to the server) has passed, if there are 2 or more robots still functioning,
+        the server declares a draw and causes the remaining clients to exit.
 
 \section{Robots Function Library}
 
@@ -128,7 +131,7 @@
         (which must be already running).
 
 \begin{description}
-\item[\texttt{int scan (int degree,int resolution)}]
+\item[\texttt{int scan(int degree,int resolution)}]
         invokes the robot's scanner, at a specified
         angle and resolution.  It returns 0 if no robots are
         within the scan range or a positive integer representing the
@@ -138,89 +141,88 @@
 
         Examples:
 \begin{verbatim}
-range = scan(45,0);   /* scan 45, with no variance */
-range = scan(365,10); /* scans the range from 355 to 15 */
+range = scan( 45, 0 );   /* scan 45, with no variance */
+range = scan( 365, 10 ); /* scans the range from 355 to 15 */
 \end{verbatim}
 
-\item[\texttt{int cannon (int degree,int range)}]
+\item[\texttt{int cannon(int degree,int range)}]
         fires a missile heading a specified range
         and direction.  It returns 1 (true) if a missile was fired,
         or 0 (false) if the cannon is reloading.  ``Out of range'' angles
-        are accepted as in scan().  Range can be 0-700, with greater
+        are accepted as in \texttt{scan()}.  Range can be 0-700, with greater
         ranges truncated to 700.
 
         Example:
 \begin{verbatim}
-degree = 45;                    /* direction to test... */
-if ((range=scan(degree,2)) > 0) /* see if a target is there */
-  cannon(degree,range);         /* if so, fire a missile */
+degree = 45;                          /* direction to look... */
+if ( 0 < ( range = scan(degree,2) ) ) /* see if a target is there */
+  cannon( degree, range );            /* if so, fire a missile */
 \end{verbatim}
 
-\item[\texttt{int drive (int degree,int speed)}]
+\item[\texttt{int drive(int degree,int speed)}]
         activates the engine, on a 
         specified heading and target speed.  Degree is forced into the range
-        0-359 as in scan().  Speed is expressed as a percent, with 100 as
-        maximum.  A speed of 0 disengages the drive.  Changes in
+        0-359 as in \texttt{scan()}.  Speed is expressed as a percent,
+        with 100 as maximum.  A speed of 0 disengages the drive.  Changes in
         direction can be made only at speeds of less than 50 percent,
         otherwise the degree argument will be silently ignored (and \emph{only}
-        the degree argument).
+        the degree argument; the speed argument will be obeyed on the \emph{old}
+        heading).
 
-        The exact ``unit of measure'' of the speed argument will be
-        decided during the project, and so will the precise semantics of
-        acceleration and deceleration.  However, decelerating from speed
-        20 to speed 0 should take exactly 8 meters.
+        Decelerating from speed 20 to speed 0 should take exactly 8 meters.
 
         Example:
 \begin{verbatim}
-drive(0,100);  /* head due east, at maximum speed */
-drive(90,0);   /* stop motion */
+drive( 0, 100 );  /* head due east, at maximum speed */
+drive( 90, 0 );   /* stop motion */
 \end{verbatim}
 
 \item[\texttt{int damage()}]
         The damage() function returns the current amount of damage
-        incurred.  damage() takes no arguments, and returns the percent
+        incurred.  \texttt{damage()} takes no arguments, and returns the percent
         of damage, 0-99. (100 percent damage means the robot is
         completely disabled, thus no longer running!) 
 
         Example:
 \begin{verbatim}
-d = damage();       /* save current state */
-...                 /* other instructions */
-if (d != damage())  /* compare current state to prior state */
+d = damage();         /* save current state */
+...                   /* other instructions */
+if ( damage() != d )  /* compare current state to prior state */
 {
-  drive(90,100);    /* robot has been hit, start moving */
-  d = damage();     /* get current damage again */
+  drive( 90, 100 );   /* robot has been hit, start moving */
+  d = damage();       /* get current damage again */
 } 
 \end{verbatim}
 
-\item[\texttt{void cycle ()}]
+\item[\texttt{void cycle()}]
         waits until the server has updated the robots' positions.
         This function is not needed except to avoid busy waiting.
 
 \item[\texttt{int speed()}]
         returns the current speed of the robot.
-        speed() takes no arguments, and returns the percent of speed,
-        0-100.  Note that speed() may not always be the same as the last
-        drive(), because of acceleration and deacceleration.
+        \texttt{speed()} takes no arguments, and returns the percent of speed,
+        0-100.  Note that \texttt{speed()} may not always be the same as the
+        last \texttt{drive()}, because of acceleration and deceleration.
 
         Example:
 \begin{verbatim}
-drive(270,100);   /* start drive, due south */
-...               /* other instructions */
-if (speed() == 0) /* check current speed */
-  drive(90,20);   /* ran into south wall or another robot*/
+drive( 270, 100 );    /* start drive, due south */
+...                   /* other instructions */
+if ( speed() == 0 )   /* check current speed */
+  drive( 90, 20 );    /* ran into south wall or another robot; */
+                      /* get moving again!                     */
 \end{verbatim}
 
-\item[\texttt{int loc\UL x ()} and \texttt{int loc\UL y ()}]
+\item[\texttt{int loc\UL x()} and \texttt{int loc\UL y()}]
         return the robot's current x (respectively, y) axis location.
-        They take no arguments, and returns 0-999.
+        They take no arguments, and return 0-999.
 
         Example:
 \begin{verbatim}
-drive (180,50);  /* start heading for west wall */
-while (loc_x() > 20)
-  cycle ();      /* do nothing until we are close */
-drive (180,0);   /* stop drive */
+drive( 180, 50 );      /* start heading for west wall */
+while ( 20 < loc_x() )
+  cycle();             /* do nothing until we are close */
+drive( 180, 0 );       /* stop drive, let robot coast to a stop */
 \end{verbatim}
 \end{description}
 
