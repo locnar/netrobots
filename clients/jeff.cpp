@@ -1,100 +1,134 @@
-/* team4918.cpp -- derived from rook.cpp                                     */
-/* This program is intended to be used to learn how to control a robot       */
-/* with C/C++.                                                               */
-/*---------------------------------------------------------------------------*/
-
-/* rook */
-/* scan the battlefield like a rook, i.e., only 0,90,180,270 */
-/* move horizontally only, but looks horz and vertically */
+/* jeff */
+/* drive around in a clockwise direction (decreasing degrees) */
+/* scan in a counter-clockwise direction (increasing degrees) */
 
 #include "robots.h"
-#include <stdio.h>
-int course;
-int boundary;
+#include <stdlib.h>
+// #include <iostream>
+// using std::cin;
+// using std::cout;
+// using std::endl;
 
+int iHeading = 0;
+int iSpeed   = 0;
+
+/* cruise moves leisurely around the perimeter of the field  */
 void
-change ()
+cruise ()
 {
-  if (course == 0)
-  {
-    boundary = 5;
-    course = 180;
+   int x, y;
+   // int i = 0;
+   int iCurSpeed = speed();
+   x = loc_x();
+   y = loc_y();
+               // We have to start slowing down before we turn, since
+               // the robot can only turn when moving less than 50 units/sec.
+   if ( 0 == iHeading ) {       // if we're going east
+      if ( ( 800 < x ) ) {      //   if we're near the east edge
+         if ( iCurSpeed < 50 ) { //     if we're going slow enough to turn
+            iHeading = 270;     //       then turn
+            iSpeed = 100;
+         } else {
+            iSpeed = 40;        //       else slow down so we can turn later
+         }
+      } else {
+         iSpeed = 100;          //   else (not near east edge) head east fast
+      }
+   } else if ( 270 == iHeading ) {  // else if we're going south
+     if ( ( y < 200 ) ) {       //   if we're near the south edge
+        if ( iCurSpeed < 50 ) { //     if we're going slow enough to turn
+           iHeading = 180;      //       then turn
+           iSpeed = 100;
+        } else {
+           iSpeed = 40;         //       else slow down so we can turn later
+        }
+     } else {
+        iSpeed = 100;           //   else (not near south edge) head south fast
+     }
+  } else if ( 180 == iHeading ) {  // else if we're going west
+     if ( ( x < 200 ) ) {       //   if we're near the west edge
+        if ( iCurSpeed < 50 ) { //     if we're going slow enough to turn
+           iHeading = 90;       //       then turn
+           iSpeed = 100;
+        } else {
+           iSpeed = 40;         //       else slow down so we can turn later
+        }
+     } else {
+        iSpeed = 100;           //   else (not near west edge) head west fast
+     }
+  } else if (  90 == iHeading ) {  // else if we're going north
+     if ( ( 800 < y ) ) {       //   if we're near the north edge
+        if ( iCurSpeed < 50 ) { //     if we're going slow enough to turn
+           iHeading = 0;        //       then turn
+           iSpeed = 100;
+        } else {
+           iSpeed = 40;         //       else slow down so we can turn later
+        }
+     } else {
+        iSpeed = 100;           //   else (not near north edge) head north fast
+     }
   }
-  else
-  {
-    boundary = 995;
-    course = 0;
+
+  if ( 50 <= iSpeed ) {
+    iSpeed = 49;
   }
-  drive (course, 30);
+
+  drive( iHeading, iSpeed );
 }
 
-/* look somewhere, and fire cannon repeatedly at in-range target */
-void
-look (int deg)
-{
-  static int d;
-  int range;
-  while ((range = scan (deg, 2)) > 0 && range <= 700)
-  {
-    drive (course, 0);
-    cannon (deg, range);
-    if (damage () >= d + 20)
-    {
-      d = damage ();
-      change ();
-    }
-  }
-}
+#define RES                  10
+#define DAMAGE_THRESHOLD      1
 
 int
 main ()
 {
-  int y;
+   int angle, range;
+   // int d;
+   // int i;
+   int bestTargetAngle, bestTargetRange;
 
-  /* move to center of board */
-  if (loc_y () < 500)
-  {
-    y = 90;
-    drive (90, 70);		/* start moving */
-    while (500 - loc_y () > 20 && speed () > 0) {	/* stop near center */
-      cycle ();
-    }
-  }
-  else
-  {
-    y = 270;
-    drive (270, 70);		/* start moving */
-    while (loc_y () - 500 > 20 && speed () > 0) {	/* stop near center */
-      cycle ();
-    }
-  }
-  drive (y, 0);
+   while (1)
+   {
+      cruise();
+      bestTargetRange = 701;
+      bestTargetAngle = 0;
 
-  /* initialize starting parameters */
-  course = 0;
-  boundary = 995;
-  drive (course, 30);
+      for ( angle=0; angle<360; angle+=(2*RES)-1 ) {
+         range = scan (angle, RES);
+         if ( range < 50 ) {
+            continue;                 // too close, find another target
+         } else if ( range < 300 ) {
+            bestTargetRange = range;
+            bestTargetAngle = angle;
+            break;
+         } else if ( range < 700 ) {
+            if ( range < bestTargetRange ) {
+               bestTargetRange = range;
+               bestTargetAngle = angle;
+            }
+         }
+      }
 
-  /* main loop */
-  while (1)
-  {
-    /* look all directions */
-    look (0);
-    look (90);
-    look (180);
-    look (270);
-
-    /* if near end of battlefield, change directions */
-    if (course == 0)
-    {
-      if (loc_x () > boundary || speed () == 0)
-        change ();
-    }
-    else
-    {
-      if (loc_x () < boundary || speed () == 0)
-        change ();
-    }
-    drive (course, 30);
-  }
+      if ( ( 50 < bestTargetRange ) && ( bestTargetRange < 700 ) )
+      {
+         if ( 500 < bestTargetRange ) {              // if it's far away, then
+            for ( angle=bestTargetAngle-RES;         // pinpoint the angle
+                  angle<bestTargetAngle+RES;
+                  angle += 2 ) {
+               range = scan( angle, 1 );
+               if ( ( 50 < range ) && ( range < 700 ) ) {
+                  break;
+               }
+            }
+                  // adjust for our motion
+                  //
+         } else {
+           range = bestTargetRange;
+           angle = bestTargetAngle;
+         }
+         if ( ( 50 < range ) && ( range < 700 ) ) {
+            while (cannon (angle, range) != 0) ;  /* fire all shots */
+         }  // if there's something precise to shoot at
+      }  // if there's something to shoot at
+   } // while 1
 }
