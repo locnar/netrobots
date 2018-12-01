@@ -20,10 +20,11 @@ CFLAGS += -I/usr/local/include/SDL -Icommon -fPIC
 CXXFLAGS  = $(COMMON_CFLAGS) -Wno-write-strings
 CXXFLAGS += -I/usr/local/include/cairo -I/usr/local/include/SDL
 CXXFLAGS += -Icommon -fPIC 
-##LDFLAGS  = -g -L/usr/lib/x86_64-linux-gnu/ -l:libcairo.so.2
-##LDFLAGS += -Wl,-rpath,/usr/lib/x86_64-linux-gnu/ -l:libSDL-1.2.so.0
-##LDFLAGS += -pthread -lm 
-LDFLAGS = -g `pkg-config cairo --libs` `pkg-config sdl --libs` -pthread -lm
+LDFLAGS  = -g -L/usr/lib/x86_64-linux-gnu/ -l:libcairo.so.2
+LDFLAGS += -Wl,-rpath,/usr/lib/x86_64-linux-gnu/ -l:libSDL-1.2.so.0
+LDFLAGS += -pthread -lm 
+## FreeBSD can use this line, rather than the 3 above
+##LDFLAGS = -g `pkg-config cairo --libs` `pkg-config sdl --libs` -pthread -lm
 MAIN_OBJ  = server/main.o server/drawing.o server/field.o
 MAIN_OBJ += common/net_utils.o server/net_commands.o
 MAIN_OBJ += server/net_core.o server/robotserver.o
@@ -42,6 +43,7 @@ common/net_utils.o: common/net_utils.cpp common/net_utils.h
 ## robots
 
 ROBOTS = counter rabbit rook sniper spot
+ROBOTS += team4918 jeff jack max ella gage sam emma olivia
 LIBROBOTS_OBJS = clients/robots.o common/net_utils.o
 
 all-robots: $(ROBOTS)
@@ -65,15 +67,42 @@ sniper: clients/sniper.cpp clients/robots.h robots.a
 spot: clients/spot.cpp clients/robots.h robots.a
 	$(CXX) $(COMMON_CFLAGS) -o $@ $< -lm robots.a
 
+team4918: clients/team4918.cpp clients/robots.h robots.a
+	$(CXX) $(COMMON_CFLAGS) -o $@ $< -lm robots.a
+
+jeff: clients/jeff.cpp clients/robots.h robots.a
+	$(CXX) $(COMMON_CFLAGS) -o $@ $< -lm robots.a
+
+jack: clients/jack.cpp clients/robots.h robots.a
+	$(CXX) $(COMMON_CFLAGS) -o $@ $< -lm robots.a
+
+max: clients/max.cpp clients/robots.h robots.a
+	$(CXX) $(COMMON_CFLAGS) -o $@ $< -lm robots.a
+
+ella: clients/ella.cpp clients/robots.h robots.a
+	$(CXX) $(COMMON_CFLAGS) -o $@ $< -lm robots.a
+
+gage: clients/gage.cpp clients/robots.h robots.a
+	$(CXX) $(COMMON_CFLAGS) -o $@ $< -lm robots.a
+
+sam: clients/sam.cpp clients/robots.h robots.a
+	$(CXX) $(COMMON_CFLAGS) -o $@ $< -lm robots.a
+
+emma: clients/emma.cpp clients/robots.h robots.a
+	$(CXX) $(COMMON_CFLAGS) -o $@ $< -lm robots.a
+
+olivia: clients/olivia.cpp clients/robots.h robots.a
+	$(CXX) $(COMMON_CFLAGS) -o $@ $< -lm robots.a
+
 ## overall rules
 
 all: robotserver $(ROBOTS)
 
-edit:	clients/rook.cpp
-	gvim clients/rook.cpp
+edit:	clients/team4918.cpp
+	gvim clients/team4918.cpp
 
 run:	$(ROBOTS)
-	./fight rook rabbit
+	./fight team4918 rabbit
 
 clean:
 	rm -f $(ROBOTS) $(LIBROBOTS_OBJS) robots.a robotserver $(MAIN_OBJ)
