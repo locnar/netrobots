@@ -1,0 +1,13 @@
+*.o
+*.swp
+*.save
+*.orig
+libnetrobots.so
+robotserver
+counter
+rabbit
+rook
+sniper
+spot
+tags
+TAGS
