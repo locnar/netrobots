@@ -6,6 +6,8 @@ University of Lugano (http://www.inf.unisi.ch).  This code was written
 by seven 3rd semester students (with aid from the TA) in a week, working
 on average 2-3 hours every day.
 
+It was updated and converted to C++ by Jeff Gibbons.
+
 The game is mostly based on CROBOTS (see
 http://en.wikipedia.org/wiki/Crobots for more info), with the following
 main differences: 1) the game logic was designed from scratch based on
