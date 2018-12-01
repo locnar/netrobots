@@ -104,6 +104,30 @@ edit:	clients/team4918.cpp
 run:	$(ROBOTS)
 	./fight team4918 rabbit
 
+gitstatusshort:	
+	git status -s
+
+gitstatus:	
+	git status
+
+gitdiff:	
+	git diff clients/team4918.cpp
+
+gitdifftool:	
+	git difftool -t tkdiff clients/team4918.cpp
+
+gitadd:	clients/team4918.cpp
+	git add clients/team4918.cpp
+
+gitcommit:	
+	git commit
+
+gitpush:	
+	git push origin master
+
+gitpull:	
+	git pull
+
 clean:
 	rm -f $(ROBOTS) $(LIBROBOTS_OBJS) robots.a robotserver $(MAIN_OBJ)
 
