@@ -51,15 +51,17 @@ main ()
     {
       y = 90;
       drive (90, 70);		/* start moving */
-      while (500 - loc_y () > 20 && speed () > 0)	/* stop near center */
+      while (500 - loc_y () > 20 && speed () > 0) {	/* stop near center */
 	cycle ();
+      }
     }
   else
     {
       y = 270;
       drive (270, 70);		/* start moving */
-      while (loc_y () - 500 > 20 && speed () > 0)	/* stop near center */
+      while (loc_y () - 500 > 20 && speed () > 0) {	/* stop near center */
 	cycle ();
+      }
     }
   drive (y, 0);
 
@@ -71,7 +73,6 @@ main ()
   /* main loop */
   while (1)
     {
-
       /* look all directions */
       look (0);
       look (90);
@@ -90,5 +91,6 @@ main ()
 	  if (loc_x () < boundary || speed () == 0)
 	    change ();
 	}
+      drive (course, 30);
     }
 }
