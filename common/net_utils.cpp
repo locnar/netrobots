@@ -2,6 +2,10 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+        /* jag; 12nov2018 -- begin  added code */
+#include <unistd.h>
+#include <ctype.h>
+        /* jag; 12nov2018 -- end of added code */
 #include "net_utils.h"
 
 int debug = 0;
@@ -113,12 +117,12 @@ sockwrite (int fd, int status, char *fmt, ...)
 	va_list vp;
 	if (fmt) {
 		va_start(vp, fmt);
-		vasprintf(&tmp, fmt, vp);
+		ret = vasprintf(&tmp, fmt, vp);
 		va_end(vp);
-		asprintf(&str, "%d %s", status, tmp);
+		ret = asprintf(&str, "%d %s", status, tmp);
 	}
 	else
-		asprintf(&str, "%d", status);
+		ret = asprintf(&str, "%d", status);
 	ret = write(fd, str, strlen(str));
 	if (fmt)
 		free(tmp);
