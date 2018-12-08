@@ -43,7 +43,7 @@ common/net_utils.o: common/net_utils.cpp common/net_utils.h
 ## robots
 
 ROBOTS = counter rabbit rook sniper spot
-ROBOTS += team4918 jeff jack max ella gage sam emma olivia
+ROBOTS += team4918 jeff jack max ella gage sam emma olivia mary
 LIBROBOTS_OBJS = clients/robots.o common/net_utils.o
 
 all-robots: $(ROBOTS)
@@ -94,6 +94,9 @@ emma: clients/emma.cpp clients/robots.h robots.a
 olivia: clients/olivia.cpp clients/robots.h robots.a
 	$(CXX) $(COMMON_CFLAGS) -o $@ $< -lm robots.a
 
+mary: clients/mary.cpp clients/robots.h robots.a
+	$(CXX) $(COMMON_CFLAGS) -o $@ $< -lm robots.a
+
 ## overall rules
 
 all: robotserver $(ROBOTS)
@@ -115,6 +118,11 @@ gitdiff:
 
 gitdifftool:	
 	git difftool -t tkdiff clients/team4918.cpp
+
+gitup:	clients/team4918.cpp
+	git add clients/team4918.cpp
+	git commit
+	git push origin master
 
 gitadd:	clients/team4918.cpp
 	git add clients/team4918.cpp
