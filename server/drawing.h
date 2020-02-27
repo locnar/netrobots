@@ -10,17 +10,17 @@
 #include <cairo.h>
 #include "SDL.h"
 
-#define WIN_WIDTH	720
-#define WIN_HEIGHT	540
-#define WIN_TITLE	"Netrobots Battlefield"
+#define WIN_WIDTH    1440 //720
+#define WIN_HEIGHT   1080 //540
+#define WIN_TITLE    "Netrobots Battlefield"
 
-/* Functions to create more cairo contexts.  */
-extern cairo_t* create_cairo_context(void);
+// Functions to create more cairo contexts.
+extern cairo_t* create_cairo_context();
 extern void destroy_cairo_context(cairo_t *);
 
-/* Functions used by main.c as a high-level interface with SDL.  */
-extern cairo_t* init_sdl(void);
-extern void free_sdl(void);
-extern void draw_sdl(void);
+// Functions used by main.c as a high-level interface with SDL.
+extern cairo_t* init_sdl();
+extern void free_sdl();
+extern void draw_sdl();
 
 #endif /* DRAWING_H */

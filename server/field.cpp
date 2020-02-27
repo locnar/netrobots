@@ -122,7 +122,7 @@ void draw_stats(cairo_t *cr, struct robot **all)
     cairo_pattern_t *pat;
 
     cairo_save(cr);
-    cairo_translate(cr, 600, 0);
+    cairo_translate(cr, 1320, 0);
 
     cairo_set_source_rgba(cr, 0.5, 0.5, 0.5, 0.2);
     cairo_rectangle(cr, 0, 0, 120, 540);
@@ -131,7 +131,7 @@ void draw_stats(cairo_t *cr, struct robot **all)
     for (int i = 0; i < max_robots; i++) {
         // display the name of the robot
         cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-        cairo_set_font_size(cr, 13.0);
+        cairo_set_font_size(cr, 14.0);
         cairo_set_source_rgba(cr, 0, 0, 0, 0.5);   // black?
 
         cairo_move_to(cr, 10.0, 15.0 + i * space);		
