@@ -1,5 +1,5 @@
 #ifndef ROBOTSERVER_H
-#define ROBOTSERVER_H 1
+#define ROBOTSERVER_H
 
 #include "net_utils.h"
 
@@ -14,7 +14,6 @@ struct cannon {
 };
 
 struct robot {
-  // int fd; Should not be needed as it is synchronized with the array of fds
   char name[STD_BUF];   // this size must match size of progname in client
   double x;
   double y;
@@ -34,7 +33,7 @@ struct robot {
 extern struct robot **all_robots;
 extern int max_robots;
 
-/* Interface from networking code to game logic.  */
+/* Interface from networking code to game logic. */
 
 int scan(struct robot *r, int degree, int resolution);
 int cannon(struct robot *r, int degree, int range);

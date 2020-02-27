@@ -1,5 +1,5 @@
 #ifndef NET_DEFINES_H
-#define NET_DEFINES_H 1
+#define NET_DEFINES_H
 
 #include "robotserver.h"
 #include "net_command_list.h"
