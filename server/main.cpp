@@ -53,9 +53,9 @@ int main(int argc, char **argv)
 
     unsigned int const end_ticks = SDL_GetTicks();
     if (start_ticks != end_ticks) {
-        printf ("frame rate: %.2f fps\n", (frame * 1000.0) / (end_ticks - start_ticks));
+        printf("frame rate: %.2f fps\n", (frame * 1000.0) / (end_ticks - start_ticks));
     }
-    sleep(2);  // let spectators view the final moment for 2 seconds, before clearing the arena
+    sleep(5);  // let spectators view the final moment for 5 seconds, before clearing the arena
 
     // clear resources before exit
     destroy_cairo();

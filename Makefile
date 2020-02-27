@@ -6,16 +6,19 @@ clean:
 ## server
 
 COMMON_CFLAGS = -g -Wall -O2
+
 CFLAGS = $(COMMON_CFLAGS) `pkg-config cairo --cflags` `pkg-config sdl --cflags`
 CFLAGS += -I/usr/local/include/SDL -Icommon -fPIC
+
 CXXFLAGS  = $(COMMON_CFLAGS) -Wno-write-strings
 CXXFLAGS += `pkg-config cairo --cflags` `pkg-config sdl --cflags`
 CXXFLAGS += -Icommon -fPIC
-LDFLAGS  = -g -L/usr/lib/x86_64-linux-gnu/ -l:libcairo.so.2
-LDFLAGS += -Wl,-rpath,/usr/lib/x86_64-linux-gnu/ -l:libSDL-1.2.so.0
+
+LDFLAGS  = -g -L/usr/lib/x86_64-linux-gnu/
+LDFLAGS += -Wl,-rpath,/usr/lib/x86_64-linux-gnu/
+LDFLAGS += `pkg-config cairo --libs` `pkg-config sdl --libs`
 LDFLAGS += -pthread -lm
-## FreeBSD can use this line, rather than the 3 above
-##LDFLAGS = -g `pkg-config cairo --libs` `pkg-config sdl --libs` -pthread -lm
+
 MAIN_OBJ  = server/main.o server/drawing.o server/field.o
 MAIN_OBJ += common/net_utils.o server/net_commands.o
 MAIN_OBJ += server/net_core.o server/robotserver.o
@@ -92,10 +95,10 @@ mary: clients/mary.cpp clients/robots.h robots.a
 
 all: robotserver $(ROBOTS)
 
-edit:	clients/team4918.cpp
+edit: clients/team4918.cpp
 	gvim clients/team4918.cpp
 
-run:	$(ROBOTS)
+run: $(ROBOTS)
 	./fight team4918 rabbit
 
 gitstatusshort:	
@@ -110,12 +113,12 @@ gitdiff:
 gitdifftool:	
 	git difftool -t tkdiff clients/team4918.cpp
 
-gitup:	clients/team4918.cpp
+gitup: clients/team4918.cpp
 	git add clients/team4918.cpp
 	git commit
 	git push origin master
 
-gitadd:	clients/team4918.cpp
+gitadd: clients/team4918.cpp
 	git add clients/team4918.cpp
 
 gitcommit:	
