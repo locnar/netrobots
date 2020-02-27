@@ -8,14 +8,16 @@
 #define BREAK_DISTANCE (0.7 / SPEED_RATIO)
 
 struct cannon {
-	int timeToReload;
-	int x, y;
+    int timeToReload;
+    int x;
+    int y;
 };
 
 struct robot {
   // int fd; Should not be needed as it is synchronized with the array of fds
   char name[STD_BUF];   // this size must match size of progname in client
-  double x, y;
+  double x;
+  double y;
   int damage;
   int speed;
   int break_distance;
@@ -29,19 +31,19 @@ struct robot {
   /* info on what was done... */
 };
 
-extern struct robot **all_robots;   // jag; 15nov2018; added extern
-extern int max_robots;              // jag; 15nov2018; added extern
+extern struct robot **all_robots;
+extern int max_robots;
 
 /* Interface from networking code to game logic.  */
 
-int scan (struct robot *r, int degree, int resolution);
-int cannon (struct robot *r, int degree, int range);
-void drive (struct robot *r, int degree, int speed);
-void cycle (void);
-int loc_x (struct robot *r);
-int loc_y (struct robot *r);
-int speed (struct robot *r);
-int damage (struct robot *r);
-void kill_robot (struct robot *r);
+int scan(struct robot *r, int degree, int resolution);
+int cannon(struct robot *r, int degree, int range);
+void drive(struct robot *r, int degree, int speed);
+void cycle(void);
+int loc_x(struct robot *r);
+int loc_y(struct robot *r);
+int speed(struct robot *r);
+int damage(struct robot *r);
+void kill_robot(struct robot *r);
 
 #endif

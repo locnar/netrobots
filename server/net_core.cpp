@@ -1,14 +1,14 @@
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <string.h>
-#include <netdb.h>
 #include <errno.h>
-#include <stdlib.h>
-#include <sys/poll.h>
-#include <stdio.h>
-#include <sys/time.h>
-#include <unistd.h>
+#include <netdb.h>
 #include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/poll.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "net_utils.h"
 #include "net_defines.h"
@@ -26,26 +26,25 @@ struct pollfd *fds;
 extern int debug;
 extern int max_robots;
 
-int max_cycles;
+int max_cycles = 0;
 int current_cycles = 0;
 
-// jagwas: struct robot **all_robots;
-
 float get_rand_color() {
-	float color = (float) (random() /(double) RAND_MAX) ;
-	if(color < 0.1) color = 0.1;
-	if(color > 0.9) color = 0.9;
-	return color;
+    float color = static_cast<float>(random() / static_cast<float>(RAND_MAX));
+    if (color < 0.1) {
+        color = 0.1;
+    }
+    else if (color > 0.9) {
+        color = 0.9;
+    }
+    return color;
 }
 
 static int quad = 0;
 
-        /* jag; 12nov2018 -- begin  added code */
-void update_display( SDL_Event *event );
-        /* jag; 12nov2018 -- end of added code */
+void update_display(SDL_Event * event);
 
-int
-create_client (int fd)
+int create_client(int fd)
 {
 	struct robot *r;
 
@@ -69,8 +68,8 @@ create_client (int fd)
 
 // jag; get the robot name, which the robot sends as the first string of
 //      text, ending with a NUL ('\0', or 0).
-               // the amount requested by the below read() call should be
-               // STD_BUF bytes, to match the write() in robots.c
+        // the amount requested by the below read() call should be
+        // STD_BUF bytes, to match the write() in robots.c
 	if ( 0 < read( fd, r->name, sizeof(r->name) ) ) {
 	  ndprintf( stdout, "[SERVER] robot didn't send its name...\n" );
         }
@@ -81,13 +80,12 @@ create_client (int fd)
 static volatile int timer;
 static int winner;
 
-void raise_timer (int sig)
+void raise_timer(int sig)
 {
-	timer = 1;
+    timer = 1;
 }
 
-int
-process_robots ()
+int process_robots()
 {
         int retVal = 0;
 	int i, ret, rfd;
@@ -273,24 +271,22 @@ int server_cycle (SDL_Event *event)
 	return process_robots();
 }
 
-void
-usage (char *prog, int retval)
+void usage(char *prog, int retval)
 {
-	printf("Usage %s [-n <clients> -H <hostname> -P <port> -d]\n"
-		"\t-n <clients>\tNumber of clients to start the game (has to be bigger than 1) (Default: 5)\n"
-		"\t-H <hostname>\tSpecifies hostname (Default: 127.0.0.1)\n"
-		"\t-P <port>\tSpecifies port (Default: 4300)\n"
-		"\t-d\tEnables debug mode\n", prog);
-	exit(retval);
+    printf("Usage %s [-n <clients> -H <hostname> -P <port> -d]\n"
+           "\t-n <clients>\tNumber of clients to start the game (has to be bigger than 1) (Default: 5)\n"
+           "\t-H <hostname>\tSpecifies hostname (Default: 127.0.0.1)\n"
+           "\t-P <port>\tSpecifies port (Default: 4300)\n"
+           "\t-d\tEnables debug mode\n", prog);
+    exit(retval);
 }
 
-int 
-server_init (int argc, char *argv[])
+int server_init(int argc, char *argv[])
 {
+	char *port = STD_PORT;
+        char *hostname = STD_HOSTNAME;
+
 	int retval;
-
-	char *port = STD_PORT, *hostname = STD_HOSTNAME;
-
 	while ((retval = getopt(argc, argv, "dn:hH:P:c:")) != -1) {
 		switch (retval) {
 			case 'c':
@@ -316,17 +312,21 @@ server_init (int argc, char *argv[])
 		}
 	}
 
-	if (argc > optind) /* || !hostname || !port)*/
+	if (argc > optind) {
 		usage(argv[0], EXIT_FAILURE);
+        }
 
-	if (max_robots <= 1)
+	if (max_robots <= 1) {
 		max_robots = STD_CLIENTS;
+        }
 
-	if (max_cycles <= 1)
+	if (max_cycles <= 1) {
 		max_cycles = STD_CYCLES;
+        }
 
-	all_robots = (struct robot **) malloc(max_robots * sizeof(struct robot *));
+	all_robots = (struct robot **)malloc(max_robots * sizeof(struct robot *));
 
 	server_start(hostname, port);
 	return 0;
 }
+

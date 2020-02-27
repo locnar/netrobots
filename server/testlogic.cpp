@@ -144,9 +144,8 @@ testRobotsCollision ()
 	printf("Damage of robot 1 %d damage of robot 2 %d\n", rock.damage, stone.damage);
 }
 
-int
-main(){
-	testScanAndShoot();
-	testDriveAndCycle();
-	testRobotsCollision();
+int main() {
+    testScanAndShoot();
+    testDriveAndCycle();
+    testRobotsCollision();
 }

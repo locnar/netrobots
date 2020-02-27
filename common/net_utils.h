@@ -9,15 +9,15 @@
 
 #define MAX(a,b) a > b ? a : b
 
-extern int debug;              // jag; 16nov2018; added extern
+extern int debug;
 
 /* to pass the ***argv pass &argv where argv is an array of strings */ 
-int str_to_argv (char *str, char ***argv);
-char *argv_to_str (char **argv);
-void ndprintf (FILE *fd, char *fmt, ...);
-void ndprintf_die (FILE *fd, char *fmt, ...);
-int sockwrite (int fd, int status, char *fmt, ...);
-int str_isnumber (char *str);
+int str_to_argv(char *str, char ***argv);
+char* argv_to_str(char **argv);
+void ndprintf(FILE *fd, char *fmt, ...);
+void ndprintf_die(FILE *fd, char *fmt, ...);
+int sockwrite(int fd, int status, char *fmt, ...);
+int str_isnumber(char *str);
 
 #endif
 
