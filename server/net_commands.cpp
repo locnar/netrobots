@@ -7,82 +7,72 @@
 #include "net_utils.h"
 #include "net_defines.h"
 
-int cmd_cycle (struct robot *robot, int *args);
-int cmd_cannon (struct robot *robot, int *args);
-int cmd_scan (struct robot *robot, int *args);
-int cmd_loc_x (struct robot *robot, int *args);
-int cmd_loc_y (struct robot *robot, int *args);
-int cmd_damage (struct robot *robot, int *args);
-int cmd_speed (struct robot *robot, int *args);
-int cmd_drive (struct robot *robot, int *args);
+int cmd_cycle(struct robot *robot, int *args);
+int cmd_cannon(struct robot *robot, int *args);
+int cmd_scan(struct robot *robot, int *args);
+int cmd_loc_x(struct robot *robot, int *args);
+int cmd_loc_y(struct robot *robot, int *args);
+int cmd_damage(struct robot *robot, int *args);
+int cmd_speed(struct robot *robot, int *args);
+int cmd_drive(struct robot *robot, int *args);
 
 cmd_t cmds[] = {
-	{ cmd_cycle, 0, true }, // CYCLE
-	{ cmd_cannon, 2, true }, // CANNON
-	{ cmd_scan, 2, true }, // SCAN
-	{ cmd_loc_x, 0, false }, // LOC_X
-	{ cmd_loc_y, 0, false }, // LOC_Y
-	{ cmd_damage, 0, false }, // DAMAGE
-	{ cmd_speed, 0, false }, // SPEED
-	{ cmd_drive, 2, true }, // MOVE
+    { cmd_cycle,   0, true  },   // CYCLE
+    { cmd_cannon,  2, true  },   // CANNON
+    { cmd_scan,    2, true  },   // SCAN
+    { cmd_loc_x,   0, false },   // LOC_X
+    { cmd_loc_y,   0, false },   // LOC_Y
+    { cmd_damage,  0, false },   // DAMAGE
+    { cmd_speed,   0, false },   // SPEED
+    { cmd_drive,   2, true  },   // MOVE
 };
 
 result_t error_res = { -1, true, false };
 
-int cmdn = sizeof(cmds)/sizeof(cmd_t);
+int const cmdn = sizeof(cmds)/sizeof(cmd_t);
 
-
-int
-cmd_cycle (struct robot *robot, int *args)
+int cmd_cycle(struct robot *robot, int *args)
 {
-	return 1;
+    return 1;
 }
 
-int 
-cmd_scan (struct robot *robot, int *args)   
+int cmd_scan(struct robot *robot, int *args)   
 {
-	return scan(robot, args[0], args[1]);
+    return scan(robot, args[0], args[1]);
 }
 
-int 
-cmd_cannon (struct robot *robot, int *args)   
+int cmd_cannon(struct robot *robot, int *args)   
 {
-	return cannon(robot, args[0], args[1]);
+    return cannon(robot, args[0], args[1]);
 }
 
-int 
-cmd_loc_x (struct robot *robot, int *args)   
+int cmd_loc_x(struct robot *robot, int *args)   
 {
-	return loc_x(robot);
+    return loc_x(robot);
 }
 
-int 
-cmd_loc_y (struct robot *robot, int *args)   
+int cmd_loc_y(struct robot *robot, int *args)   
 {
-	return loc_y(robot);
+    return loc_y(robot);
 }
 
-int 
-cmd_damage (struct robot *robot, int *args)   
+int cmd_damage(struct robot *robot, int *args)   
 {
-	return damage(robot);
+    return damage(robot);
 }
 
-int 
-cmd_speed (struct robot *robot, int *args)   
+int cmd_speed(struct robot *robot, int *args)   
 {
-	return speed(robot);
+    return speed(robot);
 }
 
-int
-cmd_drive (struct robot *robot, int *args)
+int cmd_drive(struct robot *robot, int *args)
 {
-	drive(robot, args[0], args[1]);
-	return 1;
+    drive(robot, args[0], args[1]);
+    return 1;
 }
 
-result_t
-execute_cmd (struct robot *robot, char *input)
+result_t execute_cmd(struct robot *robot, char *input)
 {
 	char **argv;
 	int argc, ret, *args, i;

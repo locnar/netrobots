@@ -278,9 +278,9 @@ update_display(SDL_Event *event)
 
 /* can be used to add a background to the window*/
 void
-init_cairo ()
+init_cairo()
 {
-	cr = init_sdl();
+    cr = init_sdl();
 #if 0
   cairo_surface_t *png_map = cairo_image_surface_create_from_png ("background.png");
   map_context = create_cairo_context ();

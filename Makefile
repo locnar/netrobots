@@ -1,24 +1,15 @@
 all:
 clean:
 
-## jag; 14nov2018 -- This Makefile modified to build on Ubuntu systems
-##                   (the original version worked fine on FreeBSD).
-##                   I had to copy the /usr/local/include/cairo and
-##                   /usr/local/include/SDL directories from a FreeBSD
-##                   machine, since those include files didn't exist here,
-##                   but the libraries did already exist.
-## jag; 16nov2018 -- Converted to C++;
-##                   increased warning level and fixed several warnings.
-
 .PHONY: all clean
 
 ## server
 
 COMMON_CFLAGS = -g -Wall -O2
-CFLAGS  = $(COMMON_CFLAGS) -I/usr/local/include/cairo
+CFLAGS = $(COMMON_CFLAGS) `pkg-config cairo --cflags` `pkg-config sdl --cflags`
 CFLAGS += -I/usr/local/include/SDL -Icommon -fPIC 
 CXXFLAGS  = $(COMMON_CFLAGS) -Wno-write-strings
-CXXFLAGS += -I/usr/local/include/cairo -I/usr/local/include/SDL
+CXXFLAGS += `pkg-config cairo --cflags` `pkg-config sdl --cflags`
 CXXFLAGS += -Icommon -fPIC 
 LDFLAGS  = -g -L/usr/lib/x86_64-linux-gnu/ -l:libcairo.so.2
 LDFLAGS += -Wl,-rpath,/usr/lib/x86_64-linux-gnu/ -l:libSDL-1.2.so.0
