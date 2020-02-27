@@ -88,7 +88,7 @@ int main()
             dir += 2;
 
             if (dir >= sc + 45)    {
-                /* at end of 90 degrees range...  */ 
+                /* at end of 90 degrees range...  */
                 if (!hit)        /* move if we hit */
                     break;
                 dir = sc - 45;   /* ... or restart */

@@ -36,32 +36,32 @@ int cmd_cycle(struct robot *robot, int *args)
     return 1;
 }
 
-int cmd_scan(struct robot *robot, int *args)   
+int cmd_scan(struct robot *robot, int *args)
 {
     return scan(robot, args[0], args[1]);
 }
 
-int cmd_cannon(struct robot *robot, int *args)   
+int cmd_cannon(struct robot *robot, int *args)
 {
     return cannon(robot, args[0], args[1]);
 }
 
-int cmd_loc_x(struct robot *robot, int *args)   
+int cmd_loc_x(struct robot *robot, int *args)
 {
     return loc_x(robot);
 }
 
-int cmd_loc_y(struct robot *robot, int *args)   
+int cmd_loc_y(struct robot *robot, int *args)
 {
     return loc_y(robot);
 }
 
-int cmd_damage(struct robot *robot, int *args)   
+int cmd_damage(struct robot *robot, int *args)
 {
     return damage(robot);
 }
 
-int cmd_speed(struct robot *robot, int *args)   
+int cmd_speed(struct robot *robot, int *args)
 {
     return speed(robot);
 }

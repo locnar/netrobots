@@ -197,7 +197,7 @@ server_start (char *hostname, char *port)
 	struct addrinfo *ai, *runp, hints;
 	struct sockaddr *addr;
 	socklen_t addrlen = sizeof(addr);
-    
+
 	memset (&hints, 0x0, sizeof (hints));
 	hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG;
 	hints.ai_family = PF_INET;

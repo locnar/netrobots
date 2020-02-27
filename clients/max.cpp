@@ -9,7 +9,7 @@
 current robot: heads for one of four points based on spawn proximity [(0,400)(0,600)(995,400)(995,600)],
 	looking for enemies constantly
 
-future work: 
+future work:
 	head for corner
 	optimize looking radius once corner is reached (
 
@@ -123,7 +123,7 @@ main ()
 {
 fire ();
 }
-      /* look all directions 
+      /* look all directions
       look (0);
       look (90);
       look (180);

@@ -11,7 +11,7 @@
 
 extern int debug;
 
-/* to pass the ***argv pass &argv where argv is an array of strings */ 
+/* to pass the ***argv pass &argv where argv is an array of strings */
 int str_to_argv(char *str, char ***argv);
 char* argv_to_str(char **argv);
 void ndprintf(FILE *fd, char *fmt, ...);

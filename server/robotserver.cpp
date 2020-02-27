@@ -15,7 +15,7 @@ void kill_robot(struct robot *r)
     r->cannon[1].timeToReload = 0;
 }
 
-int loc_x(struct robot *r) 
+int loc_x(struct robot *r)
 {
     /* Convert 0.5 ... 999.5 to 0 ... 1000 */
     int x = (r->x - 0.5) * 1000 / 999;
@@ -28,7 +28,7 @@ int loc_x(struct robot *r)
     return x;
 }
 
-int loc_y(struct robot *r) 
+int loc_y(struct robot *r)
 {
     /* Convert 0.5 ... 999.5 to 0 ... 1000 */
     int y = (r->y - 0.5) * 1000 / 999;
@@ -165,7 +165,7 @@ void drive(struct robot *r, int degree, int speed)
     if (r->speed >= 50) {
         degree = r->degree;
     }
-    
+
     if (speed > r->target_speed) {
         r->speed = speed;
     }

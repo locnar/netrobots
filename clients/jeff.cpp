@@ -3,7 +3,7 @@
 /* drive around in a clockwise direction (decreasing degrees) */
 /* scan in a counter-clockwise direction (increasing degrees) */
 /*------------------------------------------------------------*/
- 
+
 #include "robots.h"
 #include <stdlib.h>
 #include <math.h>
@@ -29,28 +29,25 @@ int iClosestTargetBearing    = 0;
 
 #define RES                  10
 
-inline void
-output_time_prompt() {
-   struct timespec stimespec;
-   clock_gettime( CLOCK_MONOTONIC, &stimespec );
-   cout << stimespec.tv_sec << ".";
-   cout << std::setw(9) << std::setfill('0');
-   cout << stimespec.tv_nsec;
+inline void output_time_prompt()
+{
+    struct timespec stimespec;
+    clock_gettime(CLOCK_MONOTONIC, &stimespec);
+    cout << stimespec.tv_sec << ".";
+    cout << std::setw(9) << std::setfill('0');
+    cout << stimespec.tv_nsec;
 }
 
-
-inline void
-output_debug( int lineno )
+inline void output_debug(int lineno)
 {
 #ifdef JAG_DEBUG
-   output_time_prompt();
-   cout << ": line " << lineno << ".";
-   cout << endl;
+    output_time_prompt();
+    cout << ": line " << lineno << ".";
+    cout << endl;
 #endif
 }
 
-inline void
-output_debug( int lineno, string sString1 )
+inline void output_debug(int lineno, string const & sString1)
 {
 #ifdef JAG_DEBUG
    output_time_prompt();
@@ -60,67 +57,64 @@ output_debug( int lineno, string sString1 )
 #endif
 }
 
-inline void
-output_debug( int lineno, string sString1, int iInt )
+inline void output_debug(int lineno, string const & sString1, int iInt)
 {
 #ifdef JAG_DEBUG
-   output_time_prompt();
-   cout << ": line " << lineno << "; ";
-   cout << sString1 << "=" << iInt << ".";
-   cout << endl;
+    output_time_prompt();
+    cout << ": line " << lineno << "; ";
+    cout << sString1 << "=" << iInt << ".";
+    cout << endl;
 #endif
 }
 
-inline void
-output_debug( int lineno, string sString1, int iInt1,
-                          string sString2, int iInt2 )
+inline void output_debug(int lineno, string const & sString1, int iInt1, string const & sString2, int iInt2)
 {
 #ifdef JAG_DEBUG
-   output_time_prompt();
-   cout << ": line " << lineno << "; ";
-   cout << sString1 << "=" << iInt1 << ", ";
-   cout << sString2 << "=" << iInt2 << ".";
-   cout << endl;
+    output_time_prompt();
+    cout << ": line " << lineno << "; ";
+    cout << sString1 << "=" << iInt1 << ", ";
+    cout << sString2 << "=" << iInt2 << ".";
+    cout << endl;
 #endif
 }
 
 
-                         /* cruise moves around the perimeter of the field  */
-void
-cruise()
+/* cruise moves around the perimeter of the field  */
+void cruise()
 {
-   int x, y;
-   int iSpeedHigh;
-   int iSpeedLow;
+    int x, y;
+    int iSpeedHigh;
+    int iSpeedLow;
 
-   int iCurSpeed = speed();
-   int iPrevHeading = iHeading;
-   int iPrevSpeed   = iSpeed;
+    int iCurSpeed = speed();
+    int iPrevHeading = iHeading;
+    int iPrevSpeed   = iSpeed;
 
-   if ( iClosestTargetDistance <= 450 ) {
-      iSpeedHigh = 140;
-      iSpeedLow  = 49;
-   } else if ( iClosestTargetDistance <= 550 ) {
-      iSpeedHigh = 100;
-      iSpeedLow  = 49;
-   } else if ( iClosestTargetDistance <= 650 ) {
-      iSpeedHigh = 89;
-      iSpeedLow  = 49;
-   } else if ( iClosestTargetDistance <= 700 ) {
-      iSpeedHigh = 49;
-      iSpeedLow  = 49;
-   } else if ( iClosestTargetDistance <= 780 ) {
-      iSpeedHigh = 2;
-      iSpeedLow  = 2;
-   } else if ( iClosestTargetDistance <= 900 ) {
-      iSpeedHigh = 10;
-      iSpeedLow  = 10;
-   } else {
-      iSpeedHigh = 19;
-      iSpeedLow  = 19;
-   }
-               // We have to start slowing down before we turn, since
-               // the robot can only turn when moving less than 50 units/sec.
+    if ( iClosestTargetDistance <= 450 ) {
+        iSpeedHigh = 140;
+        iSpeedLow  = 49;
+    } else if ( iClosestTargetDistance <= 550 ) {
+        iSpeedHigh = 100;
+        iSpeedLow  = 49;
+    } else if ( iClosestTargetDistance <= 650 ) {
+        iSpeedHigh = 89;
+        iSpeedLow  = 49;
+    } else if ( iClosestTargetDistance <= 700 ) {
+        iSpeedHigh = 49;
+        iSpeedLow  = 49;
+    } else if ( iClosestTargetDistance <= 780 ) {
+        iSpeedHigh = 2;
+        iSpeedLow  = 2;
+    } else if ( iClosestTargetDistance <= 900 ) {
+        iSpeedHigh = 10;
+        iSpeedLow  = 10;
+    } else {
+        iSpeedHigh = 19;
+        iSpeedLow  = 19;
+    }
+
+   // We have to start slowing down before we turn, since
+   // the robot can only turn when moving less than 50 units/sec.
    if ( iHeading <= 45 || 315 <= iHeading ) {       // if we're going east
       x = loc_x();
       if ( ( 800 < x ) ) {      //   if we're near the east edge
@@ -193,8 +187,7 @@ cruise()
    }
 }
 
-int
-adjustForOurMotion( int *angle, int *range, int numCycles )
+int adjustForOurMotion(int *angle, int *range, int numCycles)
 {
                                                   /* Correct for our motion */
    double dTargetDiffX, dTargetDiffY;
@@ -226,8 +219,7 @@ adjustForOurMotion( int *angle, int *range, int numCycles )
    return 0;
 }
 
-int
-lockOnTarget( int angle, int beamwidth )
+int lockOnTarget(int angle, int beamwidth)
 {
    int range = 0;
    output_debug( __LINE__, "lockOn call", angle );
@@ -256,9 +248,8 @@ lockOnTarget( int angle, int beamwidth )
                            "beamwidth ", beamwidth    );
    return ( angle );
 }
-            
-int
-main()
+
+int main()
 {
    int angle, range;
    int bestTargetAngle, bestTargetRange;
@@ -292,7 +283,7 @@ main()
          range = scan( angle, RES );
          iCyclesSinceScan++;
          if ( range <= 0 ) {
-            continue;           // nothing seen on this pie-wedge, try another 
+            continue;           // nothing seen on this pie-wedge, try another
          } else if ( range < 300 ) {
             bestTargetRange = range;
             iClosestTargetDistance = range;
@@ -347,7 +338,7 @@ main()
          if ( ( 0 < range ) && ( range < 750 ) ) {
                                                   /* Correct for our motion */
             adjustForOurMotion( &angle, &range, 1 );
-            
+
             if ( range < 40 ) {
                range = 40;
             }
