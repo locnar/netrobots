@@ -1,7 +1,7 @@
 all:
 clean:
 
-.PHONY: all clean
+.PHONY: all clean robots run tags
 
 ## server
 
@@ -39,8 +39,6 @@ common/net_utils.o: common/net_utils.cpp common/net_utils.h
 ROBOTS = counter rabbit rook sniper spot
 ROBOTS += team4918 jeff jack max ella gage sam emma olivia mary
 LIBROBOTS_OBJS = clients/robots.o common/net_utils.o
-
-all-robots: $(ROBOTS)
 
 clients/robots.o: clients/robots.cpp
 robots.a: $(LIBROBOTS_OBJS)
@@ -95,40 +93,13 @@ mary: clients/mary.cpp clients/robots.h robots.a
 
 all: robotserver $(ROBOTS)
 
-edit: clients/team4918.cpp
-	gvim clients/team4918.cpp
+robots: $(ROBOTS)
 
 run: $(ROBOTS)
 	./fight team4918 rabbit
 
-gitstatusshort:	
-	git status -s
-
-gitstatus:	
-	git status
-
-gitdiff:	
-	git diff clients/team4918.cpp
-
-gitdifftool:	
-	git difftool -t tkdiff clients/team4918.cpp
-
-gitup: clients/team4918.cpp
-	git add clients/team4918.cpp
-	git commit
-	git push origin master
-
-gitadd: clients/team4918.cpp
-	git add clients/team4918.cpp
-
-gitcommit:	
-	git commit
-
-gitpush:	
-	git push origin master
-
-gitpull:	
-	git pull
+tags:
+	ctags -R clients server common
 
 clean:
 	rm -f $(ROBOTS) $(LIBROBOTS_OBJS) robots.a robotserver $(MAIN_OBJ)
