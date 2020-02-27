@@ -14,9 +14,9 @@ extern int debug;
 /* to pass the ***argv pass &argv where argv is an array of strings */
 int str_to_argv(char *str, char ***argv);
 char* argv_to_str(char **argv);
-void ndprintf(FILE *fd, char *fmt, ...);
-void ndprintf_die(FILE *fd, char *fmt, ...);
-int sockwrite(int fd, int status, char *fmt, ...);
+void ndprintf(FILE *fd, char *fmt, ...) __attribute__((format(printf, 2, 3)));
+void ndprintf_die(FILE *fd, char *fmt, ...) __attribute__((format(printf, 2, 3)));
+int sockwrite(int fd, int status, char *fmt, ...) __attribute__((format(printf, 3, 4)));
 int str_isnumber(char *str);
 
 #endif

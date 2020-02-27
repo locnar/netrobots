@@ -7,13 +7,13 @@
 #define SPEED_RATIO 0.04
 #define BREAK_DISTANCE (0.7 / SPEED_RATIO)
 
-struct cannon {
+struct Cannon {
     int timeToReload;
     int x;
     int y;
 };
 
-struct robot {
+struct Robot {
   char name[STD_BUF];   // this size must match size of progname in client
   double x;
   double y;
@@ -24,25 +24,25 @@ struct robot {
   int degree;
   int cannon_degree;
   int radar_degree;
-  struct cannon cannon[2];
+  Cannon cannon[2];
   float color[3]; 	
 
   /* info on what was done... */
 };
 
-extern struct robot **all_robots;
+extern Robot **all_robots;
 extern int max_robots;
 
 /* Interface from networking code to game logic. */
 
-int scan(struct robot *r, int degree, int resolution);
-int cannon(struct robot *r, int degree, int range);
-void drive(struct robot *r, int degree, int speed);
+int scan(Robot *r, int degree, int resolution);
+int cannon(Robot *r, int degree, int range);
+void drive(Robot *r, int degree, int speed);
 void cycle(void);
-int loc_x(struct robot *r);
-int loc_y(struct robot *r);
-int speed(struct robot *r);
-int damage(struct robot *r);
-void kill_robot(struct robot *r);
+int loc_x(Robot *r);
+int loc_y(Robot *r);
+int speed(Robot *r);
+int damage(Robot *r);
+void kill_robot(Robot *r);
 
 #endif

@@ -29,7 +29,80 @@ extern int max_robots;
 int max_cycles = 0;
 int current_cycles = 0;
 
-float get_rand_color() {
+class ColorSelector
+{
+public:
+    void getColor(float & r, float & g, float & b) {
+        float const PHI = 0.618033988749895;
+        hue_ += PHI;
+        hue_ -= (int)hue_;
+        hsv_to_rgb(hue_, 0.80, 0.95, r, g, b);
+    }
+
+private:
+    static void hsv_to_rgb(float h, float s, float v, float & r, float & g, float & b)
+    {
+        int   const h_i = 6 * h;
+        float const f = 6 * h - h_i;
+
+        float const p = v * (1.0 - s);
+        float const q = v * (1.0 - f * s);
+        float const t = v * (1.0 - (1.0 - f) * s);
+
+        switch(h_i) {
+            case 0:
+                r = v; g = t; b = p; break; case 1: r = q; g = v; b = p; break;
+            case 2:
+                r = p; g = v; b = t;
+                break;
+            case 3:
+                r = p; g = q; b = v;
+                break;
+            case 4:
+                r = t; g = p; b = v;
+                break;
+            case 5:
+                r = v; g = p; b = q;
+                break;
+        }
+    }
+
+private:
+    static float hue_;
+};
+
+float ColorSelector::hue_ = static_cast<float>(random() / static_cast<float>(RAND_MAX));
+
+class LocationSelector
+{
+public:
+    void getLocation(double & x, double & y)
+    {
+        constexpr double PHI = 1.32471795724474602596;
+
+        double const a1 = 1.0 / PHI;
+        double const x1 = (offset1_ + 0.5 + a1 * index_);
+        x = 1000.0 * (x1 - static_cast<int>(x1));
+
+        double const a2 = 1.0 / (PHI * PHI);
+        double const y1 = (offset2_ + 0.5 + a2 * index_);
+        y = 1000.0 * (y1 - static_cast<int>(y1));
+
+        ++index_;
+    }
+
+private:
+    static int index_;
+    static double offset1_;
+    static double offset2_;
+};
+
+int LocationSelector::index_ = 0;
+double LocationSelector::offset1_ = static_cast<float>(random() / static_cast<float>(RAND_MAX));
+double LocationSelector::offset2_ = static_cast<float>(random() / static_cast<float>(RAND_MAX));
+
+float get_rand_color()
+{
     float color = static_cast<float>(random() / static_cast<float>(RAND_MAX));
     if (color < 0.1) {
         color = 0.1;
@@ -40,41 +113,36 @@ float get_rand_color() {
     return color;
 }
 
-static int quad = 0;
-
 void update_display(SDL_Event * event);
 
 int create_client(int fd)
 {
-	struct robot *r;
+    Robot *r;
 
-	if (fd == -1)
-		return 0;
-	if (!(r = (struct robot *) malloc (sizeof(struct robot))))
-		return 0;
-	memset (r, 0, sizeof (*r));
+    if (fd == -1)
+            return 0;
+    if (!(r = (Robot *) malloc (sizeof(Robot))))
+            return 0;
+    memset (r, 0, sizeof (*r));
 
-	/* place each robot in a different quadrant.  */
-	r->x = ((quad & 1) ? 0 : 500) + 500 * (random() / (double) RAND_MAX);
-	r->y = ((quad & 2) ? 0 : 500) + 500 * (random() / (double) RAND_MAX);
-	quad++;
+    LocationSelector ls;
+    ls.getLocation(r->x, r->y);
 
-	r->color[0] = get_rand_color();
-	r->color[1] = get_rand_color();
-	r->color[2] = get_rand_color();
+    ColorSelector cs;
+    cs.getColor(r->color[0], r->color[1], r->color[2]);
 
-	fds[current_robots].fd = fd;
-	all_robots[current_robots++] = r;
+    fds[current_robots].fd = fd;
+    all_robots[current_robots++] = r;
 
 // jag; get the robot name, which the robot sends as the first string of
 //      text, ending with a NUL ('\0', or 0).
-        // the amount requested by the below read() call should be
-        // STD_BUF bytes, to match the write() in robots.c
-	if ( 0 < read( fd, r->name, sizeof(r->name) ) ) {
-	  ndprintf( stdout, "[SERVER] robot didn't send its name...\n" );
-        }
+    // the amount requested by the below read() call should be
+    // STD_BUF bytes, to match the write() in robots.c
+    if ( 0 < read( fd, r->name, sizeof(r->name) ) ) {
+        ndprintf( stdout, "[SERVER] robot didn't send its name...\n" );
+    }
 
-	return 1;
+    return 1;
 }
 
 static volatile int timer;
@@ -92,7 +160,7 @@ int process_robots()
 	struct pollfd *pfd;
 	result_t result;
 	char buf[STD_BUF];
-	struct robot *robot;
+	Robot *robot;
 	int to_talk;
 
 	for (i = 0; i < max_robots; i++)
@@ -156,16 +224,11 @@ int process_robots()
 			ret = read(pfd->fd, buf, STD_BUF);
 			switch (ret) {
 				case -1:
+				case 0:
 					close(pfd->fd);
 					pfd->fd = -1;
 					kill_robot(robot);
 					break;
-				case 0:
-					close(pfd->fd);     // jag;
-					pfd->fd = -1;       // jag;
-					kill_robot(robot);  // jag;
-					break;              // jag;
-					// jagwas: abort ();
 				default:
 					buf[ret] = '\0';
 					result = execute_cmd(robot, buf);
@@ -176,12 +239,16 @@ int process_robots()
 						kill_robot(robot);
 					}
 					else {
-						if (result.cycle)
+						if (result.cycle) {
 							pfd->events = 0;
-						if (winner && pfd->fd == rfd)
+                                                }
+
+						if (winner && pfd->fd == rfd) {
 							sockwrite(pfd->fd, END, "%d", result.result);
-						else
+                                                }
+                                                else {
 							sockwrite(pfd->fd, OK, "%d", result.result);
+                                                }
 					}
 					break;
 			}
@@ -247,28 +314,32 @@ server_start (char *hostname, char *port)
 
 int server_cycle (SDL_Event *event)
 {
-	int i;
-	if (current_cycles >= max_cycles) {
-		for (i = 0; i < max_robots; i++) {
-			if (fds[i].fd != -1) {
-				sockwrite(fds[i].fd, DRAW, "Max cycles reached!\n");
-				close(fds[i].fd);
-			}
-		}
-		ndprintf(stdout, "[GAME] Ended - Draw!\n");
-		exit(EXIT_SUCCESS);
-	}
-	current_cycles++;
-	struct itimerval itv;
-	itv.it_interval.tv_sec = 0;
-	itv.it_interval.tv_usec = 0;
-	itv.it_value.tv_sec = 0;
-	itv.it_value.tv_usec = 10000;
-	setitimer (ITIMER_REAL, &itv, NULL);
-	timer = 0;
-	cycle();
-	update_display(event);
-	return process_robots();
+    if (current_cycles >= max_cycles) {
+        for (int i = 0; i < max_robots; i++) {
+            if (fds[i].fd != -1) {
+                sockwrite(fds[i].fd, DRAW, "Max cycles reached!\n");
+                close(fds[i].fd);
+            }
+        }
+        ndprintf(stdout, "[GAME] Ended - Draw!\n");
+        exit(EXIT_SUCCESS);
+    }
+    current_cycles++;
+
+    struct itimerval itv;
+    itv.it_interval.tv_sec = 0;
+    itv.it_interval.tv_usec = 0;
+    itv.it_value.tv_sec = 0;
+    itv.it_value.tv_usec = 10000;
+    setitimer(ITIMER_REAL, &itv, NULL);
+
+    timer = 0;
+
+    cycle();
+
+    update_display(event);
+
+    return process_robots();
 }
 
 void usage(char *prog, int retval)
@@ -283,50 +354,50 @@ void usage(char *prog, int retval)
 
 int server_init(int argc, char *argv[])
 {
-	char *port = STD_PORT;
-        char *hostname = STD_HOSTNAME;
+    char *port = STD_PORT;
+    char *hostname = STD_HOSTNAME;
 
-	int retval;
-	while ((retval = getopt(argc, argv, "dn:hH:P:c:")) != -1) {
-		switch (retval) {
-			case 'c':
-				max_cycles = atoi(optarg);
-				break;	
-			case 'H':
-				hostname = optarg;
-				break;
-			case 'P':
-				port = optarg;
-				break;
-			case 'd':
-				debug = 1;
-				break;
-			case 'n':
-				max_robots = atoi(optarg);
-				break;
-			case 'h':
-				usage(argv[0], EXIT_SUCCESS);
-				break;
-			default:
-				break;
-		}
-	}
-
-	if (argc > optind) {
-		usage(argv[0], EXIT_FAILURE);
+    int retval;
+    while ((retval = getopt(argc, argv, "dn:hH:P:c:")) != -1) {
+        switch (retval) {
+            case 'c':
+                max_cycles = atoi(optarg);
+                break;	
+            case 'H':
+                hostname = optarg;
+                break;
+            case 'P':
+                port = optarg;
+                break;
+            case 'd':
+                debug = 1;
+                break;
+            case 'n':
+                max_robots = atoi(optarg);
+                break;
+            case 'h':
+                usage(argv[0], EXIT_SUCCESS);
+                break;
+            default:
+                break;
         }
+    }
 
-	if (max_robots <= 1) {
-		max_robots = STD_CLIENTS;
-        }
+    if (argc > optind) {
+        usage(argv[0], EXIT_FAILURE);
+    }
 
-	if (max_cycles <= 1) {
-		max_cycles = STD_CYCLES;
-        }
+    if (max_robots <= 1) {
+        max_robots = STD_CLIENTS;
+    }
 
-	all_robots = (struct robot **)malloc(max_robots * sizeof(struct robot *));
+    if (max_cycles <= 1) {
+        max_cycles = STD_CYCLES;
+    }
 
-	server_start(hostname, port);
-	return 0;
+    all_robots = (Robot **)malloc(max_robots * sizeof(Robot *));
+
+    server_start(hostname, port);
+    return 0;
 }
 

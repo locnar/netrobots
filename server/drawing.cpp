@@ -64,7 +64,7 @@ cairo_t * init_sdl()
     /* set window title */
     SDL_WM_SetCaption(WIN_TITLE, NULL);
 
-    window_surface = SDL_SetVideoMode(WIN_WIDTH, WIN_HEIGHT, 0, SDL_DOUBLEBUF);
+    window_surface = SDL_SetVideoMode(WIN_WIDTH, WIN_HEIGHT, 0, SDL_DOUBLEBUF /*| SDL_RESIZABLE*/);
 
     /* did we get what we want? */
     if (!window_surface) {

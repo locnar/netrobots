@@ -1,7 +1,7 @@
 int
 testScanAndShoot()
 {
-	struct robot walle = {
+	Robot walle = {
 		"Wall-E",
 		true,
 		100, 100,
@@ -12,7 +12,7 @@ testScanAndShoot()
 		}
 	};
 	
-	struct robot eve = {
+	Robot eve = {
 		"Eve",
 		true,
 		500, 500,
@@ -23,7 +23,7 @@ testScanAndShoot()
 		}
 	};
 	
-	struct robot masiar = {
+	Robot masiar = {
 		"Bubi",
 		true,
 		300, 300,
@@ -34,7 +34,7 @@ testScanAndShoot()
 		}
 	};
 	
-	struct robot *robogang[3];
+	Robot *robogang[3];
 	robogang[0] = &walle;
 	robogang[1] = &eve;
 	robogang[2] = &masiar;
@@ -69,7 +69,7 @@ testScanAndShoot()
 int
 testDriveAndCycle ()
 {
-	struct robot runner = {
+	Robot runner = {
 		"Forrest Gump",
 		true,
 		100, 100,
@@ -80,7 +80,7 @@ testDriveAndCycle ()
 		}
 	};
 	
-	struct robot *robogang[1];
+	Robot *robogang[1];
 	robogang[0] = &runner;
 	
 	all_robots = robogang;
@@ -104,7 +104,7 @@ testDriveAndCycle ()
 int
 testRobotsCollision ()
 {
-	struct robot rock = {
+	Robot rock = {
 		"I'm rock!",
 		true,
 		100, 12,
@@ -115,7 +115,7 @@ testRobotsCollision ()
 		}
 	};
 	
-	struct robot stone = {
+	Robot stone = {
 		"I'm stone!",
 		true,
 		100, 100,
@@ -126,7 +126,7 @@ testRobotsCollision ()
 		}
 	};
 	
-	struct robot *robogang[2];
+	Robot *robogang[2];
 	robogang[0] = &stone;
 	robogang[1] = &rock;
 	

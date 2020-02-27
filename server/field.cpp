@@ -27,10 +27,10 @@ double degtorad(int degrees)
     return radiants;
 }
 
-void shot_animation(cairo_t *cr, double size, double direction, struct cannon *can)
+void shot_animation(cairo_t *cr, double size, double direction, Cannon *cannon)
 {
     // reduce the reload time by half of it so it draws the explosion and the flash for half the reload time
-    int const time = can->timeToReload - RELOAD_RATIO / 2;
+    int const time = cannon->timeToReload - RELOAD_RATIO / 2;
 
     if (time <= 0) {
         // if the gun is loaded don't paint anything
@@ -41,7 +41,7 @@ void shot_animation(cairo_t *cr, double size, double direction, struct cannon *c
     cairo_pattern_t *pat;
 
     // translate to 1000-y, rather than y, because the graphics canvas has 0 at the top, and 1000 at the bottom.
-    cairo_translate(cr, can->x, 1000 - can->y);
+    cairo_translate(cr, cannon->x, 1000 - cannon->y);
 
 #if 0
     /* flash of the shot, should be translate to the robot's position.  */
@@ -116,15 +116,26 @@ void draw_radar(cairo_t *cr, double direction)
 }
 
 /* draws the name and a health bar for every robot (maybe in the future also the reloading animation */
-void draw_stats(cairo_t *cr, struct robot **all)
+void draw_stats(cairo_t *cr, Robot **all)
 {
     int const space = 60;
     cairo_pattern_t *pat;
 
     cairo_save(cr);
+    cairo_set_source_rgba(cr, 0.8, 0.8, 0.8, 0.2);
+    cairo_rectangle(cr, 0, 0, 1100, 1100);
+    cairo_fill(cr);
+
+    cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, 0.5);
+    cairo_rectangle(cr, 1, 1, 1100, 1078);
+    cairo_stroke(cr);
+
+    cairo_restore(cr);
+
+    cairo_save(cr);
     cairo_translate(cr, 1320, 0);
 
-    cairo_set_source_rgba(cr, 0.5, 0.5, 0.5, 0.2);
+    cairo_set_source_rgba(cr, 0.4, 0.4, 0.4, 0.2);
     cairo_rectangle(cr, 0, 0, 120, 540);
     cairo_fill(cr);
 
@@ -169,7 +180,7 @@ void draw_stats(cairo_t *cr, struct robot **all)
 }
 
 /* draws a robot with a given size, using the various parameters(orientation, position,..) from the robot struct */
-void draw_robot(cairo_t *cr, struct robot *myRobot, double size)
+void draw_robot(cairo_t *cr, Robot *myRobot, double size)
 {
     double const x1 = -70;
     double const y1 = -30;
@@ -190,7 +201,9 @@ void draw_robot(cairo_t *cr, struct robot *myRobot, double size)
     // translate to 1000-y, rather than just y, because the graphics canvas has 0 at the top, and 1000 at the bottom.
     cairo_translate(cr, myRobot->x, 1000 - myRobot->y);
     cairo_scale(cr, size, size);
+
     cairo_save(cr);
+
     // translate to 90-degrees because the graphics canvas has 0 at the top, and 1000 at the bottom.
     cairo_rotate(cr, degtorad(90 - myRobot->degree));
 
@@ -210,14 +223,18 @@ void draw_robot(cairo_t *cr, struct robot *myRobot, double size)
     cairo_set_source_rgba(cr, 0.1, 0.7, 0.5, 0.5);	
 
     cairo_stroke(cr);
+
     cairo_restore(cr); /* pop rotate */
+
     // rotation amounts here must be "270-desireddirection"
     // because the display canvas has 0 at the top, and
     // larger numbers increasing downwards.
     // (These were previously 270+myRobot->xxx_degree).
     draw_cannon(cr, degtorad(270 - myRobot->cannon_degree));
     draw_radar(cr, degtorad(270 - myRobot->radar_degree));
+
     cairo_restore(cr); /* pop translate/scale */
+
     shot_animation(cr, size, degtorad(myRobot->cannon_degree), &myRobot->cannon[0]);
     shot_animation(cr, size, degtorad(myRobot->cannon_degree), &myRobot->cannon[1]);
 }
@@ -232,7 +249,9 @@ void draw(cairo_t *cr)
     for (int i = 0; i < max_robots; i++) {
         draw_robot(cr, all_robots[i], 0.4);
     }
+
     cairo_restore(cr);	
+
     draw_stats(cr, all_robots);
 
 //  cairo_save(cairo_context);

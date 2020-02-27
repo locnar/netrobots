@@ -214,7 +214,6 @@ void cycle()
 {
     int const ret = sockwrite(serverfd, CYCLE, NULL);
     get_resp_value(ret);
-
 }
 
 int speed()

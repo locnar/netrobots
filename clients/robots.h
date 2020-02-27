@@ -15,8 +15,8 @@ void cycle();
 int speed();
 int loc_x();
 int loc_y();
-void ndprintf_die(FILE *fd, char * fmt, ...);
-void printf_die(FILE *fd, char * fmt, int err, ...);
+void ndprintf_die(FILE *fd, char * fmt, ...) __attribute__((format(printf, 2, 3)));
+void printf_die(FILE *fd, char * fmt, int err, ...) __attribute__((format(printf, 2, 4)));
 
 #define main rmain
 

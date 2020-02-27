@@ -4,8 +4,7 @@
 #include "robotserver.h"
 #include "net_command_list.h"
 
-
-typedef int (*HANDLER)(struct robot *robot, int *args);
+typedef int (*HANDLER)(Robot *robot, int *args);
 
 typedef struct cmd_t {
     HANDLER func;
@@ -20,6 +19,6 @@ typedef struct result_t {
 } result_t;
 
 void init_server(char *hostname, char *port);
-result_t execute_cmd(struct robot *robot, char *input);
+result_t execute_cmd(Robot *robot, char *input);
 
 #endif
