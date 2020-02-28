@@ -1,17 +1,30 @@
-constexpr int CYCLE    = 0;
-constexpr int CANNON   = 1;
-constexpr int SCAN     = 2;
-constexpr int LOC_X    = 3;
-constexpr int LOC_Y    = 4;
-constexpr int DAMAGE   = 5;
-constexpr int SPEED    = 6;
-constexpr int DRIVE    = 7;
-constexpr int PROGNAME = 8;
+#ifndef NET_COMMAND_H
+#define NET_COMMAND_H
 
-constexpr int ERROR = 0;
-constexpr int OK    = 1;
-constexpr int START = 2;
-constexpr int END   = 3;
-constexpr int DEAD  = 4;
-constexpr int DRAW  = 5;
+namespace CommandEnum {
+    enum Type {
+        Cycle    = 0,
+        Cannon   = 1,
+        Scan     = 2,
+        LocX     = 3,
+        LocY     = 4,
+        Damage   = 5,
+        Speed    = 6,
+        Drive    = 7,
+        PROGNAME = 8,
+    };
+}
+
+namespace ResponseEnum {
+    enum Type {
+        Error = 0,
+        Ok    = 1,
+        Start = 2,
+        End   = 3,
+        Dead  = 4,
+        Draw  = 5,
+    };
+}
+
+#endif
 

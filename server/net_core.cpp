@@ -17,13 +17,13 @@
 
 #define STD_CLIENTS 5
 #define STD_CYCLES 10000
-#define STD_HOSTNAME NULL
+#define STD_HOSTNAME nullptr
 #define STD_PORT "4300"
 
 int current_robots = 0;
 struct pollfd *fds;
 
-extern int debug;
+extern bool debug;
 extern int max_robots;
 
 int max_cycles = 0;
@@ -148,7 +148,7 @@ int create_client(int fd)
 static volatile int timer;
 static int winner;
 
-void raise_timer(int sig)
+void raise_timer(int /*sig*/)
 {
     timer = 1;
 }
@@ -205,7 +205,7 @@ int process_robots()
 				continue;
 			}
 			if (robot->damage >= 100) {
-				sockwrite(pfd->fd, DEAD, "Sorry!");
+				sockwrite(pfd->fd, ResponseEnum::Dead, "Sorry!");
 				close(pfd->fd);
 				pfd->fd = -1;
 				continue;
@@ -233,7 +233,7 @@ int process_robots()
 					buf[ret] = '\0';
 					result = execute_cmd(robot, buf);
 					if (result.error) {
-						sockwrite(pfd->fd, ERROR, "Violation of the protocol!\n");
+						sockwrite(pfd->fd, ResponseEnum::Error, "Violation of the protocol!\n");
 						close(pfd->fd);
 						pfd->fd = -1;
 						kill_robot(robot);
@@ -244,10 +244,10 @@ int process_robots()
                                                 }
 
 						if (winner && pfd->fd == rfd) {
-							sockwrite(pfd->fd, END, "%d", result.result);
+							sockwrite(pfd->fd, ResponseEnum::End, "%d", result.result);
                                                 }
                                                 else {
-							sockwrite(pfd->fd, OK, "%d", result.result);
+							sockwrite(pfd->fd, ResponseEnum::Ok, "%d", result.result);
                                                 }
 					}
 					break;
@@ -285,8 +285,9 @@ server_start (char *hostname, char *port)
 			break;
 		runp = runp->ai_next;
 	} while (runp);
-	if (sockd == -1)
+	if (sockd == -1) {
 		ndprintf_die(stderr, "[ERROR] socket(): Couldn't create socket!\n");
+        }
 
 	/* To close the port after closing the socket */
 	if (setsockopt(sockd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof (opt)) == -1)
@@ -300,14 +301,17 @@ server_start (char *hostname, char *port)
 	
 	while (1) { /* Wait for all the clients to connect */
 		fd = accept(sockd, (struct sockaddr *) &addr, &addrlen);
-		if (!create_client(fd))
-			sockwrite(fd, ERROR, "Couldn't duplicate the FD\n");
-		if (current_robots >= max_robots)
+		if (!create_client(fd)) {
+			sockwrite(fd, ResponseEnum::Error, "Couldn't duplicate the FD\n");
+                }
+		if (current_robots >= max_robots) {
 			break;
+                }
 	}
 	ndprintf(stdout, "[GAME] Starting. All clients connected!\n");
-	for (i = 0; i < max_robots; i++)
-		sockwrite(fds[i].fd, START, "Let's play!");
+	for (i = 0; i < max_robots; i++) {
+		sockwrite(fds[i].fd, ResponseEnum::Start, "Let's play!");
+        }
 
 	signal (SIGALRM, raise_timer);
 }
@@ -317,7 +321,7 @@ int server_cycle (SDL_Event *event)
     if (current_cycles >= max_cycles) {
         for (int i = 0; i < max_robots; i++) {
             if (fds[i].fd != -1) {
-                sockwrite(fds[i].fd, DRAW, "Max cycles reached!\n");
+                sockwrite(fds[i].fd, ResponseEnum::Draw, "Max cycles reached!\n");
                 close(fds[i].fd);
             }
         }
@@ -331,7 +335,7 @@ int server_cycle (SDL_Event *event)
     itv.it_interval.tv_usec = 0;
     itv.it_value.tv_sec = 0;
     itv.it_value.tv_usec = 10000;
-    setitimer(ITIMER_REAL, &itv, NULL);
+    setitimer(ITIMER_REAL, &itv, nullptr);
 
     timer = 0;
 

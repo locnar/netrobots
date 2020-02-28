@@ -1,5 +1,5 @@
 #ifndef SERVERUTILS_H
-#define SERVERUTILS_H 1
+#define SERVERUTILS_H
 
 #include <stdio.h>
 
@@ -7,9 +7,7 @@
 #define STD_ALLOC 4
 #define STD_BUF 64
 
-#define MAX(a,b) a > b ? a : b
-
-extern int debug;
+extern bool debug;
 
 /* to pass the ***argv pass &argv where argv is an array of strings */
 int str_to_argv(char *str, char ***argv);
@@ -17,7 +15,7 @@ char* argv_to_str(char **argv);
 void ndprintf(FILE *fd, char *fmt, ...) __attribute__((format(printf, 2, 3)));
 void ndprintf_die(FILE *fd, char *fmt, ...) __attribute__((format(printf, 2, 3)));
 int sockwrite(int fd, int status, char *fmt, ...) __attribute__((format(printf, 3, 4)));
-int str_isnumber(char *str);
+bool str_isnumber(char const * str);
 
 #endif
 

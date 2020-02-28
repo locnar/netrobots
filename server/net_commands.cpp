@@ -7,14 +7,14 @@
 #include "net_utils.h"
 #include "net_defines.h"
 
-int cmd_cycle(Robot *robot, int *args);
-int cmd_cannon(Robot *robot, int *args);
-int cmd_scan(Robot *robot, int *args);
-int cmd_loc_x(Robot *robot, int *args);
-int cmd_loc_y(Robot *robot, int *args);
-int cmd_damage(Robot *robot, int *args);
-int cmd_speed(Robot *robot, int *args);
-int cmd_drive(Robot *robot, int *args);
+int cmd_cycle(Robot * robot, int * args);
+int cmd_cannon(Robot * robot, int * args);
+int cmd_scan(Robot * robot, int * args);
+int cmd_loc_x(Robot * robot, int * args);
+int cmd_loc_y(Robot * robot, int * args);
+int cmd_damage(Robot * robot, int * args);
+int cmd_speed(Robot * robot, int * args);
+int cmd_drive(Robot * robot, int * args);
 
 cmd_t cmds[] = {
     { cmd_cycle,   0, true  },   // CYCLE
@@ -24,108 +24,108 @@ cmd_t cmds[] = {
     { cmd_loc_y,   0, false },   // LOC_Y
     { cmd_damage,  0, false },   // DAMAGE
     { cmd_speed,   0, false },   // SPEED
-    { cmd_drive,   2, true  },   // MOVE
+    { cmd_drive,   2, true  },   // DRIVE
 };
 
 result_t error_res = { -1, true, false };
 
-int const cmdn = sizeof(cmds)/sizeof(cmd_t);
+int const NUMBER_COMMANDS = sizeof(cmds)/sizeof(cmd_t);
 
-int cmd_cycle(Robot *robot, int *args)
+int cmd_cycle(Robot * /*robot*/, int * /*args*/)
 {
     return 1;
 }
 
-int cmd_scan(Robot *robot, int *args)
+int cmd_scan(Robot * robot, int * args)
 {
     return scan(robot, args[0], args[1]);
 }
 
-int cmd_cannon(Robot *robot, int *args)
+int cmd_cannon(Robot * robot, int * args)
 {
     return cannon(robot, args[0], args[1]);
 }
 
-int cmd_loc_x(Robot *robot, int *args)
+int cmd_loc_x(Robot * robot, int * /*args*/)
 {
     return loc_x(robot);
 }
 
-int cmd_loc_y(Robot *robot, int *args)
+int cmd_loc_y(Robot * robot, int * /*args*/)
 {
     return loc_y(robot);
 }
 
-int cmd_damage(Robot *robot, int *args)
+int cmd_damage(Robot * robot, int * /*args*/)
 {
     return damage(robot);
 }
 
-int cmd_speed(Robot *robot, int *args)
+int cmd_speed(Robot * robot, int * /*args*/)
 {
     return speed(robot);
 }
 
-int cmd_drive(Robot *robot, int *args)
+int cmd_drive(Robot * robot, int * args)
 {
     drive(robot, args[0], args[1]);
     return 1;
 }
 
-result_t execute_cmd(Robot *robot, char *input)
+result_t execute_cmd(Robot * robot, char *input)
 {
-	char **argv;
-	int argc, ret, *args, i;
-	cmd_t cmd;
-	result_t res;
+    char **argv;
+    int const argc = str_to_argv(input, &argv);
+    if (argc == -1) {
+        return error_res;
+    }
+    if (!argc || !str_isnumber(argv[0])) {
+        free(argv);
+        return error_res;
+    }
 
-	argc = str_to_argv(input, &argv);
-	if (argc == -1) {
-		return error_res;
+    int const i = atoi(argv[0]);
+    if (i < 0 || i >= NUMBER_COMMANDS) {
+        free(argv);
+        return error_res;
+    }
+    cmd_t const & cmd = cmds[i];
+
+    if (cmd.args != argc - 1) {
+        free(argv);
+        return error_res;
+    }
+
+    int * args = (int *)malloc(cmd.args * sizeof(int));
+    if (!args) {
+        free(argv);
+        return error_res;
+    }
+
+    for (int idx = 1; idx < argc; idx++) {
+        if (!str_isnumber(argv[idx])) {
+            free(argv);
+            free(args);
+            return error_res;
         }
-	if (!argc || !str_isnumber(argv[0])) {
-		free(argv);
-		return error_res;
-	}
-
-	i = atoi(argv[0]);
-	if (i < 0 || i >= cmdn) {
-		free(argv);
-		return error_res;
-        }
-	cmd = cmds[i];
-
-	if (cmd.args != argc - 1) {
-		free(argv);
-		return error_res;
-	}
-
-	if (!(args = (int *) malloc(cmd.args * sizeof(int)))) {
-		free(argv);
-		return error_res;
-	}
-
-	for (i = 1; i < argc; i++) {
-		if (!str_isnumber(argv[i])) {
-                        free(argv);
-			return error_res;
-                }
-		args[i - 1] = atoi(argv[i]);
-	}
+        args[idx - 1] = atoi(argv[idx]);
+    }
 
 
-	ret = cmd.func(robot, args);
-	ndprintf(stdout, "[COMMAND] %s -> %d received - %g %g %d\n", argv[0], ret, robot->x, robot->y, robot->damage);
-	if (ret == -1) {
-		free(argv);
-		return error_res;
-        }
+    int const ret = cmd.func(robot, args);
+    ndprintf(stdout, "[COMMAND] %s -> %d received - %g %g %d\n", argv[0], ret, robot->x, robot->y, robot->damage);
+    if (ret == -1) {
+        free(argv);
+        free(args);
+        return error_res;
+    }
 
-	res.result = ret;
-	res.cycle = cmd.cycle;
-	res.error = false;
- 	
-	free(argv);
+    result_t res;
+    res.result = ret;
+    res.cycle = cmd.cycle;
+    res.error = false;
 
-	return res;
+    free(argv);
+    free(args);
+    return res;
 }

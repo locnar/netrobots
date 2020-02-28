@@ -3,7 +3,8 @@
 /* degrees from a corner, sniper can scan the field quickly. */
 
 #include "robots.h"
-#include <math.h>
+#include <cmath>
+#include <algorithm>
 
 /* classical pythagorean distance formula */
 int distance(int x1, int y1, int x2, int y2)
@@ -65,8 +66,6 @@ void new_corner()
     }
 }
 
-#define MAX(a, b)        ((a) > (b) ? (a) : (b))
-
 int main()
 {
     /* initialize the corner info */
@@ -104,7 +103,7 @@ int main()
             }
 
             if (hit) {
-                dir = MAX(dir - 10, sc - 45);    /* back up scan after attack */
+                dir = std::max(dir - 10, sc - 45);    /* back up scan after attack */
                 hit = 0;
             }
         } while (d == damage());

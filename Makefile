@@ -5,7 +5,7 @@ clean:
 
 ## server
 
-COMMON_CFLAGS = -g -Wall -O2
+COMMON_CFLAGS = -g -Wall -Wextra -pedantic -O2
 
 CFLAGS = $(COMMON_CFLAGS) `pkg-config cairo --cflags` `pkg-config sdl --cflags`
 CFLAGS += -I/usr/local/include/SDL -Icommon -fPIC

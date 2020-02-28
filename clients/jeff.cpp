@@ -44,6 +44,8 @@ inline void output_debug(int lineno)
     output_time_prompt();
     cout << ": line " << lineno << ".";
     cout << endl;
+#else
+    (void)lineno;
 #endif
 }
 
@@ -54,6 +56,9 @@ inline void output_debug(int lineno, string const & sString1)
    cout << ": line " << lineno << "; ";
    cout << sString1 << ".";
    cout << endl;
+#else
+   (void)lineno;
+   (void)sString1;
 #endif
 }
 
@@ -64,6 +69,10 @@ inline void output_debug(int lineno, string const & sString1, int iInt)
     cout << ": line " << lineno << "; ";
     cout << sString1 << "=" << iInt << ".";
     cout << endl;
+#else
+    (void)lineno;
+    (void)sString1;
+    (void)iInt;
 #endif
 }
 
@@ -75,6 +84,12 @@ inline void output_debug(int lineno, string const & sString1, int iInt1, string 
     cout << sString1 << "=" << iInt1 << ", ";
     cout << sString2 << "=" << iInt2 << ".";
     cout << endl;
+#else
+    (void)lineno;
+    (void)sString1;
+    (void)iInt1;
+    (void)sString2;
+    (void)iInt2;
 #endif
 }
 

@@ -62,7 +62,7 @@ cairo_t * init_sdl()
     }
 
     /* set window title */
-    SDL_WM_SetCaption(WIN_TITLE, NULL);
+    SDL_WM_SetCaption(WIN_TITLE, nullptr);
 
     window_surface = SDL_SetVideoMode(WIN_WIDTH, WIN_HEIGHT, 0, SDL_DOUBLEBUF /*| SDL_RESIZABLE*/);
 
@@ -84,7 +84,7 @@ cairo_t * init_sdl()
 
 void draw_sdl()
 {
-    SDL_BlitSurface(sdl_surface, NULL, window_surface, NULL);
+    SDL_BlitSurface(sdl_surface, nullptr, window_surface, nullptr);
     SDL_Flip(window_surface);
 }
 

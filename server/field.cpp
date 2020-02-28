@@ -27,7 +27,7 @@ double degtorad(int degrees)
     return radiants;
 }
 
-void shot_animation(cairo_t *cr, double size, double direction, Cannon *cannon)
+void shot_animation(cairo_t *cr, double /*size*/, double /*direction*/, Cannon *cannon)
 {
     // reduce the reload time by half of it so it draws the explosion and the flash for half the reload time
     int const time = cannon->timeToReload - RELOAD_RATIO / 2;

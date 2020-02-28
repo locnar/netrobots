@@ -23,26 +23,26 @@ static int serverfd;
 static int eval_response(int resp)
 {
     switch (resp) {
-        case END:
-            sockwrite(serverfd, END, NULL);
-            printf_die(stdout, "You win!\n", 0);
+        case ResponseEnum::End:
+            sockwrite(serverfd, ResponseEnum::End, nullptr);
+            printf_die(stdout, 0, "You win!\n");
             break;
 
-        case DEAD:
-            printf_die(stdout, "You are dead!\n", 1);
+        case ResponseEnum::Dead:
+            printf_die(stdout, 1, "You are dead!\n");
             break;
 
-        case START:
-        case OK:
+        case ResponseEnum::Start:
+        case ResponseEnum::Ok:
             break;
 
-        case DRAW:
-            printf_die(stdout, "Game ended wih a draw!\n", 0);
+        case ResponseEnum::Draw:
+            printf_die(stdout, 0, "Game ended wih a draw!\n");
             break;
 
-        case ERROR:
+        case ResponseEnum::Error:
         default:
-            printf_die(stderr, "Error detected.. exiting!\n", 2);
+            printf_die(stderr, 2, "Error detected.. exiting!\n");
             break;
     }
     return resp;
@@ -60,7 +60,7 @@ static int get_resp_value(int ret)
         char **argv;
         int const argc = str_to_argv(resp, &argv);
         if (argc == -1) {
-            printf_die(stderr, "[ERROR] Cannot allocate buffer... exiting!\n", EXIT_FAILURE);
+            printf_die(stderr, EXIT_FAILURE, "[ERROR] Cannot allocate buffer... exiting!\n");
         }
 
         if (argc >= 1 && str_isnumber(argv[0])) {
@@ -76,7 +76,7 @@ static int get_resp_value(int ret)
     }
 
     if (ret == -1) {
-        printf_die(stdout, "Server probably dead or you have been killed!\n", errno);
+        printf_die(stdout, errno, "Server probably dead or you have been killed!\n");
     }
 
     return result;
@@ -94,10 +94,10 @@ static int client_init(char * remotehost, char * port, char * progname)
     int ret;
     struct addrinfo * ai = nullptr;
     if ((ret = getaddrinfo (remotehost, port, &hints, &ai))) {
-        printf_die(stderr, "[ERROR] getaddrinfo('%s', '%s'): %s\n", EXIT_FAILURE, remotehost, port, gai_strerror(ret));
+        printf_die(stderr, EXIT_FAILURE, "[ERROR] getaddrinfo('%s', '%s'): %s\n", remotehost, port, gai_strerror(ret));
     }
     if (!ai) {
-        printf_die(stderr, "[ERROR] getaddrinf(): couldn't fill the struct!\n", EXIT_FAILURE);
+        printf_die(stderr, EXIT_FAILURE, "[ERROR] getaddrinf(): couldn't fill the struct!\n");
     }
 
     struct addrinfo *runp = ai;
@@ -178,58 +178,58 @@ int main(int argc, char **argv)
 
     signal(SIGPIPE, SIG_IGN);
     if (client_init(remotehost, port, progname)) {
-        printf_die(stderr, "could not connect to : %s:%s\n", EXIT_FAILURE, remotehost, port);
+        printf_die(stderr, EXIT_FAILURE, "could not connect to : %s:%s\n", remotehost, port);
     }
 
-    srandom(time(NULL) + getpid());
-    srand(time(NULL) + getpid());
+    srandom(time(nullptr) + getpid());
+    srand(time(nullptr) + getpid());
     rmain ();
 }
 
 int scan(int degree,int resolution)
 {
-    int const ret = sockwrite(serverfd, SCAN, "%d %d", degree, resolution);
+    int const ret = sockwrite(serverfd, CommandEnum::Scan, "%d %d", degree, resolution);
     return get_resp_value(ret);	
 }
 
 int cannon(int degree,int range)
 {
-    int const ret = sockwrite(serverfd, CANNON, "%d %d", degree, range);
+    int const ret = sockwrite(serverfd, CommandEnum::Cannon, "%d %d", degree, range);
     return get_resp_value(ret);
 }
 
 void drive(int degree,int speed)
 {
-    int const ret = sockwrite(serverfd, DRIVE,  "%d %d", degree, speed);
+    int const ret = sockwrite(serverfd, CommandEnum::Drive,  "%d %d", degree, speed);
     get_resp_value(ret);
 }
 
 int damage()
 {
-    int const ret = sockwrite(serverfd, DAMAGE, NULL);
+    int const ret = sockwrite(serverfd, CommandEnum::Damage, nullptr);
     return get_resp_value(ret);
 }
 
 void cycle()
 {
-    int const ret = sockwrite(serverfd, CYCLE, NULL);
+    int const ret = sockwrite(serverfd, CommandEnum::Cycle, nullptr);
     get_resp_value(ret);
 }
 
 int speed()
 {
-    int const ret = sockwrite(serverfd, SPEED, NULL);
+    int const ret = sockwrite(serverfd, CommandEnum::Speed, nullptr);
     return get_resp_value(ret);
 }
 
 int loc_x()
 {
-    int const ret = sockwrite(serverfd, LOC_X, NULL);
+    int const ret = sockwrite(serverfd, CommandEnum::LocX, nullptr);
     return get_resp_value(ret);
 }
 
 int loc_y()
 {
-    int const ret = sockwrite(serverfd, LOC_Y, NULL);
+    int const ret = sockwrite(serverfd, CommandEnum::LocY, nullptr);
     return get_resp_value(ret);
 }

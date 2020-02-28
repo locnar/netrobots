@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
@@ -6,14 +7,15 @@
 #include <unistd.h>
 #include "net_utils.h"
 
-int debug = 0;
+bool debug = false;
 
 int str_to_argv(char *str, char ***argv)
 {
-    int argc = 0, alloc = STD_ALLOC;
+    int argc = 0;
+    int alloc = STD_ALLOC;
     char **targv;
 
-    *argv = NULL;
+    *argv = nullptr;
 
     if (!*str) {
         return argc;
@@ -28,7 +30,7 @@ int str_to_argv(char *str, char ***argv)
             *str++ = '\0';
         }
 
-        if (!*str) {
+        if (*str == '\0') {
             break;
         }
 
@@ -58,7 +60,8 @@ int str_to_argv(char *str, char ***argv)
 
 char* argv_to_str(char **argv)
 {
-    int alloc = STD_BUF, len = 0;
+    int alloc = STD_BUF;
+    int len = 0;
 
     char * buf = static_cast<char *>(malloc(alloc * sizeof(char)));
     if (!buf) {
@@ -66,10 +69,10 @@ char* argv_to_str(char **argv)
     }
 
     for (int i = 0; argv[i]; i++) {
-        char * token = argv[i];
-        int slen = strlen(token);
+        char const * token = argv[i];
+        int const slen = strlen(token);
         if (slen >= alloc + len + 1) {
-            alloc = MAX(2 * len, 2 * slen + len + 1);
+            alloc = std::max(2 * len, 2 * slen + len + 1);
 
             buf = static_cast<char *>(realloc(buf, alloc * sizeof(char)));
             if (!buf) {
@@ -109,11 +112,11 @@ void ndprintf_die(FILE *fd, char *fmt, ...)
     exit(EXIT_FAILURE);
 }
 
-void printf_die(FILE *fd, char *fmt, int err, ...)
+void printf_die(FILE *fd, int err, char *fmt, ...)
 {
     va_list vp;
 
-    va_start(vp, err);
+    va_start(vp, fmt);
     vfprintf(fd, fmt, vp);
     va_end(vp);
 
@@ -122,7 +125,8 @@ void printf_die(FILE *fd, char *fmt, int err, ...)
 
 int sockwrite(int fd, int status, char *fmt, ...)
 {
-    char *str, *tmp;
+    char *str = nullptr;
+    char *tmp = nullptr;
 
     int ret;
     if (fmt) {
@@ -147,19 +151,18 @@ int sockwrite(int fd, int status, char *fmt, ...)
     return ret;
 }
 
-int str_isnumber(char *str)
+bool str_isnumber(char const * str)
 {
-    int const len = strlen(str);
-
-    for (int i = 0; i < len; i++) {
-        if (i == 0 && str[i] == '-') {
-            continue;
+    for (char const * pos = str; *pos; ++pos) {
+        if (*pos == '-') {
+            if (pos == str) continue;
+            return false;
         }
 
-        if (!isdigit(str[i])) {
-            return 0;
+        if (!isdigit(*pos)) {
+            return false;
         }
     }
 
-    return 1;
+    return true;
 }

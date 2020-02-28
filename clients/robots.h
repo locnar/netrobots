@@ -16,7 +16,7 @@ int speed();
 int loc_x();
 int loc_y();
 void ndprintf_die(FILE *fd, char * fmt, ...) __attribute__((format(printf, 2, 3)));
-void printf_die(FILE *fd, char * fmt, int err, ...) __attribute__((format(printf, 2, 4)));
+void printf_die(FILE *fd, int err, char * fmt, ...) __attribute__((format(printf, 3, 4)));
 
 #define main rmain
 
