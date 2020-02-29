@@ -224,3 +224,10 @@ int loc_y()
     int const ret = sockwrite(serverfd, CommandEnum::LocY, nullptr);
     return get_resp_value(ret);
 }
+
+int get_time()
+{
+    int const ret = sockwrite(serverfd, CommandEnum::Time, nullptr);
+    return get_resp_value(ret);
+}
+

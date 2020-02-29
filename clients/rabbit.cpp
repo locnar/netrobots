@@ -37,8 +37,8 @@ void go(int dest_x, int dest_y)
 int main()
 {
     while (1) {
-        int const x = rand () / (double) RAND_MAX * 1000;
-        int const y = rand () / (double) RAND_MAX * 1000;
+        int const x = rand() / (double) RAND_MAX * 1000;
+        int const y = rand() / (double) RAND_MAX * 1000;
         go(x, y);	/* go somewhere in the field */
     }
 }

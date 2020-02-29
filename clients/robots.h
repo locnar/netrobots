@@ -15,6 +15,7 @@ void cycle();
 int speed();
 int loc_x();
 int loc_y();
+int get_time();
 void ndprintf_die(FILE *fd, char * fmt, ...) __attribute__((format(printf, 2, 3)));
 void printf_die(FILE *fd, int err, char * fmt, ...) __attribute__((format(printf, 3, 4)));
 
