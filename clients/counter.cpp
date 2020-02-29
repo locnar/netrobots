@@ -6,8 +6,7 @@
 #include <stdlib.h>
 
 /* run moves around the center of the field */
-void
-run ()
+void run()
 {
   static enum { EAST, NORTH, WEST, SOUTH } last_dir;
   int x, y;

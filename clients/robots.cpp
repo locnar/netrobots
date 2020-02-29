@@ -125,8 +125,8 @@ void usage(char *prog, int retval)
 {
     printf("Usage %s [-n <clients> -H <hostname> -P <port> -d]\n"
            "\t-H <remothost>\tSpecifies hostname (Default: 127.0.0.1)\n"
-           "\t-P <port>\tSpecifies port (Default: 4300)\n"
-           "\t-d\tEnables debug mode\n", prog);
+           "\t-P <port>\tSpecifies port (Default: %s)\n"
+           "\t-d\tEnables debug mode\n", prog, DEFAULT_PORT);
     exit(retval);
 }
 
@@ -136,16 +136,7 @@ int main(int argc, char **argv)
     char * port = DEFAULT_PORT;
     char progname[STD_BUF];   // must match size of name element of struct robot in server/robotserver.h
 	
-    if (argv[0][0] == '.') {
-        if (argv[0][1]  == '/') {
-            strncpy(progname, (char *)&(argv[0][2]), sizeof(progname));
-        } else {
-            strncpy(progname, (char *)&(argv[0][1]), sizeof(progname));
-        }
-    }
-    else {
-        strncpy(progname, argv[0], sizeof(progname));
-    }
+    strncpy(progname, basename(argv[0]), sizeof(progname));
     progname[sizeof(progname)-1] = '\0';  // make sure strings ends with NUL
 
     int retval;

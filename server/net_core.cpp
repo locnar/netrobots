@@ -121,9 +121,9 @@ int create_client(int fd)
 
     if (fd == -1)
             return 0;
-    if (!(r = (Robot *) malloc (sizeof(Robot))))
+    if (!(r = static_cast<Robot *>(malloc(sizeof(Robot)))))
             return 0;
-    memset (r, 0, sizeof (*r));
+    memset(r, 0, sizeof(*r));
 
     LocationSelector ls;
     ls.getLocation(r->x, r->y);
@@ -138,8 +138,8 @@ int create_client(int fd)
 //      text, ending with a NUL ('\0', or 0).
     // the amount requested by the below read() call should be
     // STD_BUF bytes, to match the write() in robots.c
-    if ( 0 < read( fd, r->name, sizeof(r->name) ) ) {
-        ndprintf( stdout, "[SERVER] robot didn't send its name...\n" );
+    if ( 0 < read(fd, r->name, sizeof(r->name)) ) {
+        ndprintf(stdout, "[SERVER] robot didn't send its name...\n");
     }
 
     return 1;
@@ -257,8 +257,7 @@ int process_robots()
         return retVal;
 }
 
-void
-server_start (char *hostname, char *port)
+void server_start(char const *hostname, char const *port)
 {
 	int sockd, ret, fd, i, opt = 1;
 	struct addrinfo *ai, *runp, hints;
@@ -296,11 +295,11 @@ server_start (char *hostname, char *port)
 		ndprintf_die(stderr, "[ERROR] bind(): %s\n", strerror(errno));
 	if (listen(sockd, max_robots))
 		ndprintf_die(stderr, "[ERROR] listen(): %s\n", strerror(errno));
-	if (!(fds = (struct pollfd *) malloc (max_robots * sizeof(struct pollfd))))
+	if (!(fds = (struct pollfd *)malloc(max_robots * sizeof(struct pollfd))))
 		ndprintf_die(stderr, "[ERROR] Couldn't malloc space for fds!\n");
 	
 	while (1) { /* Wait for all the clients to connect */
-		fd = accept(sockd, (struct sockaddr *) &addr, &addrlen);
+		fd = accept(sockd, (struct sockaddr *)&addr, &addrlen);
 		if (!create_client(fd)) {
 			sockwrite(fd, ResponseEnum::Error, "Couldn't duplicate the FD\n");
                 }
@@ -316,7 +315,7 @@ server_start (char *hostname, char *port)
 	signal (SIGALRM, raise_timer);
 }
 
-int server_cycle (SDL_Event *event)
+int server_cycle(SDL_Event *event)
 {
     if (current_cycles >= max_cycles) {
         for (int i = 0; i < max_robots; i++) {
@@ -346,13 +345,15 @@ int server_cycle (SDL_Event *event)
     return process_robots();
 }
 
-void usage(char *prog, int retval)
+static void usage(char const *prog, int retval)
 {
-    printf("Usage %s [-n <clients> -H <hostname> -P <port> -d]\n"
-           "\t-n <clients>\tNumber of clients to start the game (has to be bigger than 1) (Default: 5)\n"
-           "\t-H <hostname>\tSpecifies hostname (Default: 127.0.0.1)\n"
-           "\t-P <port>\tSpecifies port (Default: 4300)\n"
-           "\t-d\tEnables debug mode\n", prog);
+    fprintf(retval == EXIT_SUCCESS ? stdout : stderr,
+            "Usage %s [-n <clients> -H <hostname> -P <port> -d]\n"
+            "\t-n <clients>   Number of clients to start the game (must be greater than 1) (Default: 5)\n"
+            "\t-H <hostname>  Specifies hostname (Default: 127.0.0.1)\n"
+            "\t-P <port>      Specifies port (Default: 4300)\n"
+            "\t-d             Enables debug mode\n",
+            prog);
     exit(retval);
 }
 
