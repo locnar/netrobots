@@ -7,6 +7,8 @@
 #include "net_utils.h"
 #include "net_defines.h"
 
+extern int current_cycles;
+
 int cmd_cycle(Robot * robot, int * args);
 int cmd_cannon(Robot * robot, int * args);
 int cmd_scan(Robot * robot, int * args);
@@ -15,6 +17,7 @@ int cmd_loc_y(Robot * robot, int * args);
 int cmd_damage(Robot * robot, int * args);
 int cmd_speed(Robot * robot, int * args);
 int cmd_drive(Robot * robot, int * args);
+int cmd_time(Robot * robot, int * args);
 
 cmd_t cmds[] = {
     { cmd_cycle,   0, true  },   // CYCLE
@@ -25,6 +28,7 @@ cmd_t cmds[] = {
     { cmd_damage,  0, false },   // DAMAGE
     { cmd_speed,   0, false },   // SPEED
     { cmd_drive,   2, true  },   // DRIVE
+    { cmd_time,    0, false },   // TIME
 };
 
 result_t error_res = { -1, true, false };
@@ -70,6 +74,11 @@ int cmd_drive(Robot * robot, int * args)
 {
     drive(robot, args[0], args[1]);
     return 1;
+}
+
+int cmd_time(Robot * /*robot*/, int * /*args*/)
+{
+    return current_cycles;
 }
 
 result_t execute_cmd(Robot * robot, char *input)

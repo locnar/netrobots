@@ -11,7 +11,8 @@ namespace CommandEnum {
         Damage   = 5,
         Speed    = 6,
         Drive    = 7,
-        PROGNAME = 8,
+        Time     = 8,
+        PROGNAME = 9,
     };
 }
 

@@ -136,16 +136,7 @@ int main(int argc, char **argv)
     char * port = DEFAULT_PORT;
     char progname[STD_BUF];   // must match size of name element of struct robot in server/robotserver.h
 	
-    if (argv[0][0] == '.') {
-        if (argv[0][1]  == '/') {
-            strncpy(progname, (char *)&(argv[0][2]), sizeof(progname));
-        } else {
-            strncpy(progname, (char *)&(argv[0][1]), sizeof(progname));
-        }
-    }
-    else {
-        strncpy(progname, argv[0], sizeof(progname));
-    }
+    strncpy(progname, basename(argv[0]), sizeof(progname));
     progname[sizeof(progname)-1] = '\0';  // make sure strings ends with NUL
 
     int retval;
@@ -233,3 +224,10 @@ int loc_y()
     int const ret = sockwrite(serverfd, CommandEnum::LocY, nullptr);
     return get_resp_value(ret);
 }
+
+int get_time()
+{
+    int const ret = sockwrite(serverfd, CommandEnum::Time, nullptr);
+    return get_resp_value(ret);
+}
+
